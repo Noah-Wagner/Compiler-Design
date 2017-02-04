@@ -38,4 +38,19 @@ void runTests() {
     e = new NotExpr(new BoolExpr(true));
     assert(eval(e).valueData.boolData == false);
 
+    e = new GeExpr(new IntExpr(4), new IntExpr(4));
+    assert(eval(e).valueData.boolData == false);
+
+    e = new GeqExpr(new IntExpr(4), new IntExpr(4));
+    assert(eval(e).valueData.boolData == true);
+
+    e = new LeExpr(new IntExpr(2), new IntExpr(9));
+    assert(eval(e).valueData.boolData == true);
+
+    e = new LeqExpr(new IntExpr(7), new IntExpr(3));
+    assert(eval(e).valueData.boolData == false);
+
+    e = new NegExpr(new IntExpr(-3));
+    assert(eval(e).valueData.intData == 3);
+
 }

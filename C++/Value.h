@@ -5,6 +5,8 @@
 #ifndef C_VALUE_H
 #define C_VALUE_H
 
+
+//TODO: We have two enums for this
 enum class VALUE_TYPE {
     Int_Type,
     Bool_Type,

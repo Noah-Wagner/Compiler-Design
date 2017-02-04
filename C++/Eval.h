@@ -61,7 +61,6 @@ Value eval(Expr *e) {
             r = performIntegerOperation(e->e1, e->e2, [](int x, int y) { return x % y; });
         }
 
-
         void visit(GeExpr *e) {
             r = performEqualityOperation(e->e1, e->e2, [](int x, int y) { return x > y; });
         }
@@ -78,8 +77,19 @@ Value eval(Expr *e) {
             r = performEqualityOperation(e->e1, e->e2, [](int x, int y) { return x <= y; });
         }
 
+        void visit(NegExpr *e) {
+            r = performIntegerOperation(e->e1, e->e1, [](int x, int y) { return 0 - x; });
+        }
 
+        void visit(CondExpr *e) {
+            r = eval(e);
+            if (r.valueType == VALUE_TYPE ::Bool_Type) {
+                if (Type(e->e2) != Type(e->e3)) {
+                    throw std::invalid_argument("Invalid arguments");
+                }
 
+            }
+        }
 
     };
     V visitor;

@@ -40,6 +40,9 @@ TYPE Type(Expr *e) {
         void visit(ModExpr *e) {
             r = TYPE::IntType;
         }
+        void visit(NegExpr *e) {
+            r = TYPE::IntType;
+        }
         void visit(GeqExpr *e) {
             r = TYPE::BoolType;
         }
@@ -52,6 +55,10 @@ TYPE Type(Expr *e) {
         void visit(LeqExpr *e) {
             r = TYPE::BoolType;
         }
+        void visit(CondExpr *e) {
+            // LOL
+        }
+
     };
     V visitor;
     e->accept(visitor);

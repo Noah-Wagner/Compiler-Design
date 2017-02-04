@@ -21,10 +21,13 @@ struct SubExpr;
 struct MultiExpr;
 struct DivExpr;
 struct ModExpr;
+struct NegExpr;
 struct LeExpr;
 struct GeExpr;
 struct LeqExpr;
 struct GeqExpr;
+
+struct CondExpr;
 
 enum class TYPE {
     IntType,
@@ -70,6 +73,8 @@ struct Expr::Visitor {
 
     virtual void visit(ModExpr *) = 0;
 
+    virtual void visit(NegExpr *) = 0;
+
     virtual void visit(GeExpr *) = 0;
 
     virtual void visit(GeqExpr *) = 0;
@@ -77,6 +82,8 @@ struct Expr::Visitor {
     virtual void visit(LeExpr *) = 0;
 
     virtual void visit(LeqExpr *) = 0;
+
+    virtual void visit(CondExpr *) = 0;
 
 };
 
@@ -187,6 +194,16 @@ struct ModExpr : Expr {
     ModExpr(Expr *e1, Expr *e2) : e1(e1), e2(e2) {}
 };
 
+struct NegExpr : Expr {
+    Expr *e1;
+
+    virtual void accept(Visitor &v) {
+        v.visit(this);
+    }
+
+    NegExpr(Expr *e1) : e1(e1) {}
+};
+
 struct LeExpr : Expr {
     Expr *e1;
     Expr *e2;
@@ -229,6 +246,18 @@ struct GeqExpr : Expr {
     }
 
     GeqExpr(Expr *e1, Expr *e2) : e1(e1), e2(e2) {}
+};
+
+struct CondExpr : Expr {
+    Expr *e1;
+    Expr *e2;
+    Expr *e3;
+
+    virtual void accept(Visitor &v) {
+        v.visit(this);
+    }
+
+    CondExpr(Expr *e1, Expr *e2, Expr *e3) : e1(e1), e2(e2), e3(e3) {}
 };
 
 struct Context {
