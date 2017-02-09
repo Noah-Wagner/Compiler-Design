@@ -20,8 +20,8 @@ Value eval(Expr *e) {
         Value r;
 
         void visit(BoolExpr *e) {
-            r.valueData.boolData = e->val;
-            r.valueType = VALUE_TYPE::Bool_Type;
+            r.valueData = {e->val};
+            r.valueType = TYPE::BoolType;
         };
 
         void visit(AndExpr *e) {
@@ -37,8 +37,8 @@ Value eval(Expr *e) {
         }
 
         void visit(IntExpr *e) {
-            r.valueData.intData = e->val;
-            r.valueType = VALUE_TYPE::Int_Type;
+            r.valueData = {e->val};
+            r.valueType = TYPE::IntType;
         }
 
         void visit(AddExpr *e) {
@@ -83,7 +83,7 @@ Value eval(Expr *e) {
 
         void visit(CondExpr *e) {
             r = eval(e);
-            if (r.valueType == VALUE_TYPE ::Bool_Type) {
+            if (r.valueType == TYPE::IntType) {
                 if (Type(e->e2) != Type(e->e3)) {
                     throw std::invalid_argument("Invalid arguments");
                 }
@@ -102,8 +102,8 @@ Value performEqualityOperation(Expr *e1, Expr *e2, std::function<bool(int, int)>
         throw std::invalid_argument("Invalid argument");
     }
     Value r;
-    r.valueData.boolData = func(eval(e1).valueData.intData, eval(e2).valueData.intData);
-    r.valueType = VALUE_TYPE::Int_Type;
+    r.valueData = {func(eval(e1).valueData.intData, eval(e2).valueData.intData)};
+    r.valueType = TYPE::IntType;
     return r;
 }
 
@@ -112,8 +112,8 @@ Value performIntegerOperation(Expr *e1, Expr *e2, std::function<int(int, int)> f
         throw std::invalid_argument("Invalid argument");
     }
     Value r;
-    r.valueData.intData = func(eval(e1).valueData.intData, eval(e2).valueData.intData);
-    r.valueType = VALUE_TYPE::Int_Type;
+    r.valueData = {func(eval(e1).valueData.intData, eval(e2).valueData.intData)};
+    r.valueType = TYPE::IntType;
     return r;
 }
 
@@ -122,8 +122,8 @@ Value performBooleanOperation(Expr *e1, Expr *e2, std::function<bool(bool, bool)
         throw std::invalid_argument("Invalid argument");
     }
     Value r;
-    r.valueData.intData = func(eval(e1).valueData.boolData, eval(e2).valueData.boolData);
-    r.valueType = VALUE_TYPE::Bool_Type;
+    r.valueData = {func(eval(e1).valueData.boolData, eval(e2).valueData.boolData)};
+    r.valueType = TYPE::BoolType;
     return r;
 }
 

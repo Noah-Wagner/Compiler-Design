@@ -4,21 +4,16 @@
 
 #ifndef C_VALUE_H
 #define C_VALUE_H
-
-
-//TODO: We have two enums for this
-enum class VALUE_TYPE {
-    Int_Type,
-    Bool_Type,
-};
-
-union Value_Data {
-    int intData;
-    bool boolData;
-};
+#include "AST.h"
 
 struct Value {
-    VALUE_TYPE valueType;
+
+    union Value_Data {
+        int intData;
+        bool boolData;
+    };
+
+    TYPE valueType;
     Value_Data valueData;
 };
 
