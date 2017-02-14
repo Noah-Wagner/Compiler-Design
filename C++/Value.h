@@ -8,13 +8,13 @@
 
 struct Value {
 
-    union Value_Data {
+    union ValueData {
         int intData;
         bool boolData;
     };
 
     TYPE valueType;
-    Value_Data valueData;
+    ValueData valueData;
 };
 
 #endif //C_VALUE_H

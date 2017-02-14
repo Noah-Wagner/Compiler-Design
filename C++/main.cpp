@@ -11,6 +11,7 @@ int main() {
 }
 
 void runTests() {
+
     Expr * e = new AddExpr(new IntExpr(3), new IntExpr(5));
     assert(eval(e).valueData.intData == 8);
 
@@ -62,4 +63,12 @@ void runTests() {
     e = new CondExpr(new BoolExpr(true), new IntExpr(4), new IntExpr(7));
     assert(eval(e).valueData.intData == 4);
 
+    bool exceptionThrown = false;
+    try {
+        e = new AddExpr(new IntExpr(-1), new IntExpr(INT_MIN));
+        std::cout << eval(e).valueData.intData;
+    } catch (...) {
+        exceptionThrown = true;
+    }
+    assert(exceptionThrown);
 }

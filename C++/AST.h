@@ -31,6 +31,8 @@ struct LeqExpr;
 struct GeqExpr;
 
 struct CondExpr;
+struct AndThenExpr;
+struct OrElseExpr;
 
 enum class TYPE {
     IntType,
@@ -93,6 +95,10 @@ struct Expr::Visitor {
     virtual void visit(LeqExpr *) = 0;
 
     virtual void visit(CondExpr *) = 0;
+
+    virtual void visit(AndThenExpr *) = 0;
+
+    virtual void visit(OrElseExpr *) = 0;
 
 };
 
@@ -300,6 +306,28 @@ struct CondExpr : Expr {
     }
 
     CondExpr(Expr *e1, Expr *e2, Expr *e3) : e1(e1), e2(e2), e3(e3) {}
+};
+
+struct AndThenExpr : Expr {
+    Expr *e1;
+    Expr *e2;
+
+    virtual void accept(Visitor &v) {
+        v.visit(this);
+    }
+
+    AndThenExpr(Expr *e1, Expr *e2) : e1(e1), e2(e2) {}
+};
+
+struct OrElseExpr : Expr {
+    Expr *e1;
+    Expr *e2;
+
+    virtual void accept(Visitor &v) {
+        v.visit(this);
+    }
+
+    OrElseExpr(Expr *e1, Expr *e2) : e1(e1), e2(e2) {}
 };
 
 struct Context {

@@ -65,7 +65,13 @@ TYPE Type(Expr *e) {
             r = TYPE::BoolType;
         }
         void visit(CondExpr *e) {
-            // LOL
+            r = Type(e->e2);
+        }
+        void visit(AndThenExpr *e) {
+            r = TYPE::BoolType;
+        }
+        void visit(OrElseExpr *e) {
+            r = TYPE::BoolType;
         }
 
     };
