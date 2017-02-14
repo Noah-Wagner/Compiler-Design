@@ -82,15 +82,16 @@ Value eval(Expr *e) {
         }
 
         void visit(CondExpr *e) {
-            r = eval(e);
-            if (r.valueType == TYPE::IntType) {
-                if (Type(e->e2) != Type(e->e3)) {
-                    throw std::invalid_argument("Invalid arguments");
-                }
-
+            r = eval(e->e1);
+            if (r.valueType != TYPE::BoolType) {
+                throw std::invalid_argument("Invalid arguments");
             }
+            if (Type(e->e2) != Type(e->e3)) {
+                throw std::invalid_argument("Invalid arguments");
+            }
+            r.valueData = r.valueData.boolData ? eval(e->e2).valueData : eval(e->e3).valueData;
+            r.valueType = Type(e->e2);
         }
-
     };
     V visitor;
     e->accept(visitor);

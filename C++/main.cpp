@@ -53,4 +53,13 @@ void runTests() {
     e = new NegExpr(new IntExpr(-3));
     assert(eval(e).valueData.intData == 3);
 
+    e = new BoolExpr(3);
+    assert(eval(e).valueData.boolData == true);
+
+    e = new CondExpr(new BoolExpr(false), new IntExpr(4), new IntExpr(7));
+    assert(eval(e).valueData.intData == 7);
+
+    e = new CondExpr(new BoolExpr(true), new IntExpr(4), new IntExpr(7));
+    assert(eval(e).valueData.intData == 4);
+
 }
