@@ -1,6 +1,6 @@
 --------------
 #Compiler Design - Homework 1
-#Noah Wagner
+##Noah Wagner
 ###Internal representation of a small expression language 
 
 #Overview
@@ -10,9 +10,7 @@ This code currently supports the internal representation of a small expression l
 
 This language defines expression structures. These are structures that contain sub-expressions and the relationships between them. These are implemented in 'AST.h'. All expression structures inherit from a base 'Expr' class, which serves as an interface for the visitor pattern.
 
-The language currently has two types: integer and boolean values. These are defined in 'AST.h'.
-
-Types are currently implemented with an enumeration, but this is subject to change as the demands of the internal representation grow. 
+The language currently has two types: integer and boolean values. These are defined in 'AST.h'. Types are currently implemented with an enumeration, but this is subject to change as the demands of the internal representation grow. 
 
 All type checking is done in 'Type.h', using a visitor pattern. This is done with the 'Type(expression)' function, which recurses down the expression's AST to find the base type. This returns values from the 'TYPE' enumeration. This is subject to change.
 
