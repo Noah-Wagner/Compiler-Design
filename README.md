@@ -1,7 +1,7 @@
 --------------
 #Compiler Design - Homework 1
 ##Noah Wagner
-###Internal representation of a small expression language 
+####Internal representation of a small expression language 
 
 #Overview
 This code currently supports the internal representation of a small expression language as defined in the Homework 1 specification. This is the beginnings of a compiler, with no parsing or front end yet implemented. The atomic unit of this language is the expression, a recursive structure that delineates relationships between sub-expressions. At the bottom of any AST are the primitive types, currently comprised of the integer type and the boolean type. The code in the current state supports arithmetic bounds checking, type checking, and recursive expression evaluation. The visitor pattern is used for readability and to promote future extensibility. 
