@@ -22,6 +22,9 @@ struct MultiExpr;
 struct DivExpr;
 struct ModExpr;
 struct NegExpr;
+
+struct EqExpr;
+struct NeqExpr;
 struct LeExpr;
 struct GeExpr;
 struct LeqExpr;
@@ -59,6 +62,8 @@ struct Expr::Visitor {
 
     virtual void visit(OrExpr *) = 0;
 
+    virtual void visit(XorExpr *) = 0;
+
     virtual void visit(NotExpr *) = 0;
 
     virtual void visit(IntExpr *) = 0;
@@ -74,6 +79,10 @@ struct Expr::Visitor {
     virtual void visit(ModExpr *) = 0;
 
     virtual void visit(NegExpr *) = 0;
+
+    virtual void visit(EqExpr *) = 0;
+
+    virtual void visit(NeqExpr *) = 0;
 
     virtual void visit(GeExpr *) = 0;
 
@@ -127,6 +136,17 @@ struct OrExpr : Expr {
     }
 
     OrExpr(Expr *e1, Expr *e2) : e1(e1), e2(e2) {}
+};
+
+struct XorExpr : Expr {
+    Expr *e1;
+    Expr *e2;
+
+    virtual void accept(Visitor &v) {
+        v.visit(this);
+    }
+
+    XorExpr(Expr *e1, Expr *e2) : e1(e1), e2(e2) {}
 };
 
 struct IntExpr : Expr {
@@ -202,6 +222,28 @@ struct NegExpr : Expr {
     }
 
     NegExpr(Expr *e1) : e1(e1) {}
+};
+
+struct EqExpr : Expr {
+    Expr *e1;
+    Expr *e2;
+
+    virtual void accept(Visitor &v) {
+        v.visit(this);
+    }
+
+    EqExpr(Expr *e1, Expr *e2) : e1(e1), e2(e2) {}
+};
+
+struct NeqExpr : Expr {
+    Expr *e1;
+    Expr *e2;
+
+    virtual void accept(Visitor &v) {
+        v.visit(this);
+    }
+
+    NeqExpr(Expr *e1, Expr *e2) : e1(e1), e2(e2) {}
 };
 
 struct LeExpr : Expr {

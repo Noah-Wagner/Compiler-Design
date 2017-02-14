@@ -22,6 +22,9 @@ TYPE Type(Expr *e) {
         void visit(OrExpr *e) {
             r = TYPE::BoolType;
         }
+        void visit(XorExpr *e) {
+            r = TYPE::BoolType;
+        }
         void visit(AddExpr *e) {
             r = TYPE::IntType;
         }
@@ -39,6 +42,12 @@ TYPE Type(Expr *e) {
         }
         void visit(ModExpr *e) {
             r = TYPE::IntType;
+        }
+        void visit(EqExpr *e) {
+            r = TYPE::BoolType;
+        }
+        void visit(NeqExpr *e) {
+            r = TYPE::BoolType;
         }
         void visit(NegExpr *e) {
             r = TYPE::IntType;

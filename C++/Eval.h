@@ -9,6 +9,8 @@
 #include "Type.h"
 #include "Value.h"
 
+bool performEqualityOperation(Expr *e1, Expr *e2);
+
 Value performEqualityOperation(Expr *e1, Expr *e2, std::function<bool(int, int)> func);
 
 Value performBooleanOperation(Expr *e1, Expr *e2, std::function<bool(bool, bool)> func);
@@ -30,6 +32,10 @@ Value eval(Expr *e) {
 
         void visit(OrExpr *e) {
             r = performBooleanOperation(e->e1, e->e2, [](bool x, bool y) { return x | y; });
+        };
+
+        void visit(XorExpr *e) {
+            r = performBooleanOperation(e->e1, e->e2, [](bool x, bool y) { return x ^ y; });
         };
 
         void visit(NotExpr *e) {
@@ -59,6 +65,16 @@ Value eval(Expr *e) {
 
         void visit(ModExpr *e) {
             r = performIntegerOperation(e->e1, e->e2, [](int x, int y) { return x % y; });
+        }
+
+        void visit(EqExpr *e) {
+            r.valueData.boolData = performEqualityOperation(e->e1, e->e2);
+            r.valueType = TYPE::BoolType;
+        }
+
+        void visit(NeqExpr *e) {
+            r.valueData.boolData = !performEqualityOperation(e->e1, e->e2);
+            r.valueType = TYPE::BoolType;
         }
 
         void visit(GeExpr *e) {
@@ -96,6 +112,22 @@ Value eval(Expr *e) {
     V visitor;
     e->accept(visitor);
     return visitor.r;
+}
+
+bool performEqualityOperation(Expr *e1, Expr *e2) {
+    if (Type(e1) != Type(e2)) {
+        throw std::invalid_argument("Invalid argument");
+    }
+    Value r1 = eval(e1);
+    Value r2 = eval(e2);
+    switch (r1.valueType) {
+        case TYPE::IntType:
+            return r1.valueData.intData == r2.valueData.intData;
+        case TYPE::BoolType:
+            return r1.valueData.boolData == r2.valueData.boolData;
+        default:
+            throw std::invalid_argument("Value type not yet implemented for equality");
+    }
 }
 
 Value performEqualityOperation(Expr *e1, Expr *e2, std::function<bool(int, int)> func) {
