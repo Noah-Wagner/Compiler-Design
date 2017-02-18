@@ -39,15 +39,6 @@ enum class TYPE {
     BoolType,
 };
 
-struct Type {
-    virtual ~Type() = default;
-};
-
-struct BoolType : Type {
-};
-struct IntType : Type {
-};
-
 struct Expr {
     virtual ~Expr() = default;
 
@@ -330,9 +321,5 @@ struct OrElseExpr : Expr {
     OrElseExpr(Expr *e1, Expr *e2) : e1(e1), e2(e2) {}
 };
 
-struct Context {
-    BoolType boolType;
-    IntType intType;
-};
 
 #endif //C_AST_H

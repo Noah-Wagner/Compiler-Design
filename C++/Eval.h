@@ -131,12 +131,13 @@ Value eval(Expr *e) {
 }
 
 Value performEqualityOperation(Expr *e1, Expr *e2) {
-    Value r;
     if (Type(e1) != Type(e2)) {
         throw std::invalid_argument("Invalid argument");
     }
+    Value r;
     Value r1 = eval(e1);
     Value r2 = eval(e2);
+    //TODO: Find a better way to do this
     switch (r1.valueType) {
         case TYPE::IntType:
             r.valueData = {r1.valueData.intData == r2.valueData.intData};
