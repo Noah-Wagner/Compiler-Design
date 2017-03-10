@@ -33,16 +33,33 @@ std::vector<Token *> GetTokenSequence(std::string);
 int main() {
     RunTests();
 
-    std::string input;
-    std::getline(std::cin, input);
+    while (true) {
+        std::string input;
+        std::getline(std::cin, input);
 
-    std::vector<Token *> tokens = GetTokenSequence(input);
+        std::vector<Token *> tokens = GetTokenSequence(input);
 
-    for (int i = 0; i < tokens.size() - 1; i++) {
-        std::cout << '<' << TokenToString(tokens[i]->kind) << ((tokens[i]->attribute == "") ? "> " : ", " + tokens[i]->attribute + "> ");
+        for (int i = 0; i < tokens.size() - 1; i++) {
+            std::cout << '<' << TokenToString(tokens[i]->kind)
+                      << ((tokens[i]->attribute == "") ? "> " : ", " + tokens[i]->attribute + "> ");
+        }
+        std::cout << std::endl;
     }
 
     return 0;
+}
+
+std::vector<Token *> GetTokenSequence(std::string input) {
+    std::vector<Token *> tokens;
+    Token *token;
+    Lexer lexer(input);
+    while (!lexer.IsEof()) {
+        token = lexer.Next();
+        tokens.push_back(token);
+    }
+    token = lexer.Next();
+    tokens.push_back(token);
+    return tokens;
 }
 
 void RunTests() {
@@ -99,19 +116,6 @@ void LexerTests() {
         exceptionThrown = true;
     }
     assert(exceptionThrown);
-}
-
-std::vector<Token *> GetTokenSequence(std::string input) {
-    std::vector<Token *> tokens;
-    Token *token;
-    Lexer lexer(input);
-    while (!lexer.IsEof()) {
-        token = lexer.Next();
-        tokens.push_back(token);
-    }
-    token = lexer.Next();
-    tokens.push_back(token);
-    return tokens;
 }
 
 void ASTTests() {
