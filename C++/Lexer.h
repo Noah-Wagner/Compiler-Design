@@ -1,6 +1,19 @@
-//
-// Created by Noah Wagner on 3/9/17.
-//
+/*
+ * Copyright (c) 2017 Noah Wagner.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef C_LEXER_H
 #define C_LEXER_H
@@ -20,7 +33,7 @@ enum class TOKEN_KIND {
     RightParenTok, IntTok,
     BoolTok, CommTok,
     BitLeftTok, BitRightTok,
-    XorTok, SpaceTok,
+    XorTok,
     BitAndTok, BitOrTok
 };
 
@@ -34,14 +47,11 @@ struct Token {
     Token(TOKEN_KIND kind)
             : kind(kind) {}
 
-
     Token(TOKEN_KIND kind, int attr)
             : kind(kind), attribute(std::to_string(attr)) {}
 
     Token(TOKEN_KIND kind, std::string str)
             : kind(kind), attribute(str) {}
-
-//    virtual ~Token() = default;
 
 };
 
@@ -77,6 +87,7 @@ struct Lexer {
         while (first != last) {
             Consume();
         }
+        Consume();
     }
 
     void ClearBuffer() {
@@ -91,7 +102,7 @@ Token * Lexer::Next() {
 
     if (LookAhead() == '#') {
         Comment();
-        temp = buffer;
+        temp = buffer.substr(1);
         ClearBuffer();
         return new Token(TOKEN_KIND::CommTok, temp);
     }

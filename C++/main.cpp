@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2017 Noah Wagner.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <iostream>
 #include <vector>
 #include "AST.h"
@@ -57,6 +74,10 @@ void LexerTests() {
     assert(tokens[1]->kind == TOKEN_KIND::OrTok);
     assert(tokens[2]->kind == TOKEN_KIND::BoolTok);
     assert(tokens[2]->attribute == "0");
+
+    tokens = GetTokenSequence("#test");
+    assert(tokens[0]->kind == TOKEN_KIND::CommTok);
+    assert(tokens[0]->attribute == "test");
 
     bool exceptionThrown = false;
     try {
