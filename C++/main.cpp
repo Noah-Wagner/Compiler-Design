@@ -1,18 +1,88 @@
 #include <iostream>
+#include <vector>
 #include "AST.h"
 #include "Eval.h"
 #include "assert.h"
+#include "Lexer.h"
 
-void runTests();
+void RunTests();
+
+void ASTTests();
+
+void LexerTests();
+
+std::vector<Token *> GetTokenSequence(std::string);
 
 int main() {
-    runTests();
+    RunTests();
     return 0;
 }
 
-void runTests() {
+void RunTests() {
 
-    Expr * e = new AddExpr(new IntExpr(3), new IntExpr(5));
+    ASTTests();
+
+    LexerTests();
+
+
+}
+
+void LexerTests() {
+    std::vector<Token *> tokens;
+
+    tokens = GetTokenSequence("364565 + 12345 - 5555 * 456 / 65");
+    assert(tokens[0]->kind == TOKEN_KIND::IntTok);
+    assert(tokens[0]->attribute == "364565");
+    assert(tokens[1]->kind == TOKEN_KIND::AddTok);
+    assert(tokens[2]->kind == TOKEN_KIND::IntTok);
+    assert(tokens[2]->attribute == "12345");
+    assert(tokens[3]->kind == TOKEN_KIND::SubTok);
+    assert(tokens[4]->kind == TOKEN_KIND::IntTok);
+    assert(tokens[4]->attribute == "5555");
+    assert(tokens[5]->kind == TOKEN_KIND::MulTok);
+    assert(tokens[6]->kind == TOKEN_KIND::IntTok);
+    assert(tokens[6]->attribute == "456");
+    assert(tokens[7]->kind == TOKEN_KIND::DivTok);
+    assert(tokens[8]->kind == TOKEN_KIND::IntTok);
+    assert(tokens[8]->attribute == "65");
+
+    tokens = GetTokenSequence("!true");
+    assert(tokens[0]->kind == TOKEN_KIND::NotTok);
+    assert(tokens[1]->kind == TOKEN_KIND::BoolTok);
+    assert(tokens[1]->attribute == "1");
+
+    tokens = GetTokenSequence("true || false");
+    assert(tokens[0]->kind == TOKEN_KIND::BoolTok);
+    assert(tokens[0]->attribute == "1");
+    assert(tokens[1]->kind == TOKEN_KIND::OrTok);
+    assert(tokens[2]->kind == TOKEN_KIND::BoolTok);
+    assert(tokens[2]->attribute == "0");
+
+    bool exceptionThrown = false;
+    try {
+        tokens = GetTokenSequence("asdf");
+    } catch (...) {
+        exceptionThrown = true;
+    }
+    assert(exceptionThrown);
+}
+
+std::vector<Token *> GetTokenSequence(std::string input) {
+    std::vector<Token *> tokens;
+    Token *token;
+    Lexer lexer(input);
+    while (!lexer.IsEof()) {
+        token = lexer.Next();
+        tokens.push_back(token);
+    }
+    token = lexer.Next();
+    tokens.push_back(token);
+    return tokens;
+}
+
+void ASTTests() {
+
+    Expr *e = new AddExpr(new IntExpr(3), new IntExpr(5));
     assert(eval(e).valueData.intData == 8);
 
     e = new AddExpr(new MultiExpr(new IntExpr(3), new IntExpr(4)), new IntExpr(7));
@@ -71,4 +141,5 @@ void runTests() {
         exceptionThrown = true;
     }
     assert(exceptionThrown);
+
 }
