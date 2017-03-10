@@ -20,11 +20,11 @@
 
 #include <string>
 
-enum class TOKEN_KIND {
+enum TOKEN_KIND {
     EOFTok, AddTok,
     SubTok, MulTok,
     DivTok, ModTok,
-    AmpTok, OrTok,
+    AndTok, OrTok,
     NotTok, EqTok,
     NeqTok, LtTok,
     GtTok,  LtEqTok,
@@ -36,6 +36,39 @@ enum class TOKEN_KIND {
     XorTok,
     BitAndTok, BitOrTok
 };
+
+std::string TokenToString(TOKEN_KIND token) {
+    switch (token) {
+
+        case EOFTok: return "0/";
+        case AddTok: return "+";
+        case SubTok: return "-";
+        case MulTok: return "*";
+        case DivTok: return "/";
+        case ModTok: return "%";
+        case AndTok: return "&&";
+        case OrTok: return "||";
+        case NotTok: return "!";
+        case EqTok: return "==";
+        case NeqTok: return "!=";
+        case LtTok: return "<";
+        case GtTok: return ">";
+        case LtEqTok: return "<=";
+        case GtEqTok: return ">=";
+        case QuTok: return "?";
+        case ColonTok: return ":";
+        case LeftParenTok: return "(";
+        case RightParenTok: return ")";
+        case IntTok: return "INT";
+        case BoolTok: return "BOOL";
+        case CommTok: return "#";
+        case BitLeftTok: return "<<";
+        case BitRightTok: return ">>";
+        case XorTok: return "^";
+        case BitAndTok: return "&";
+        case BitOrTok: return "|";
+    }
+}
 
 struct Token {
 
@@ -107,15 +140,13 @@ Token * Lexer::Next() {
         return new Token(TOKEN_KIND::CommTok, temp);
     }
 
-    if (IsEof()) {
-        ClearBuffer();
-        return new Token(TOKEN_KIND::EOFTok);
-    }
-
     char test = LookAhead();
     Consume();
 
     switch (test) {
+        case 0:
+            ClearBuffer();
+            return new Token(TOKEN_KIND::EOFTok);
         case ' ':
             ClearBuffer();
             return Next();
@@ -138,7 +169,7 @@ Token * Lexer::Next() {
             if (LookAhead() == '&') {
                 Consume();
                 ClearBuffer();
-                return new Token(TOKEN_KIND::AmpTok);
+                return new Token(TOKEN_KIND::AndTok);
             }
             ClearBuffer();
             return new Token(TOKEN_KIND::BitAndTok);

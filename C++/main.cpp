@@ -32,20 +32,33 @@ std::vector<Token *> GetTokenSequence(std::string);
 
 int main() {
     RunTests();
+
+    std::string input;
+    std::getline(std::cin, input);
+
+    std::vector<Token *> tokens = GetTokenSequence(input);
+
+    for (int i = 0; i < tokens.size() - 1; i++) {
+        std::cout << '<' << TokenToString(tokens[i]->kind) << ((tokens[i]->attribute == "") ? "> " : ", " + tokens[i]->attribute + "> ");
+    }
+
     return 0;
 }
 
 void RunTests() {
-
     ASTTests();
-
     LexerTests();
-
-
 }
 
 void LexerTests() {
     std::vector<Token *> tokens;
+
+    tokens = GetTokenSequence("4 + 5");
+    assert(tokens[0]->kind == TOKEN_KIND::IntTok);
+    assert(tokens[0]->attribute == "4");
+    assert(tokens[1]->kind == TOKEN_KIND::AddTok);
+    assert(tokens[2]->kind == TOKEN_KIND::IntTok);
+    assert(tokens[2]->attribute == "5");
 
     tokens = GetTokenSequence("364565 + 12345 - 5555 * 456 / 65");
     assert(tokens[0]->kind == TOKEN_KIND::IntTok);
