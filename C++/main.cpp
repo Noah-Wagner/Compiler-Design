@@ -39,7 +39,7 @@ int main() {
 
         std::vector<Token *> tokens = GetTokenSequence(input);
 
-        for (int i = 0; i < tokens.size() - 1; i++) {
+        for (int i = 0; i < tokens.size(); i++) {
             std::cout << '<' << TokenToString(tokens[i]->kind)
                       << ((tokens[i]->attribute == "") ? "> " : ", " + tokens[i]->attribute + "> ");
         }
@@ -51,7 +51,7 @@ int main() {
 
 std::vector<Token *> GetTokenSequence(std::string input) {
     std::vector<Token *> tokens;
-    Token *token;
+    Token * token;
     Lexer lexer(input);
     while (!lexer.IsEof()) {
         token = lexer.Next();
@@ -65,6 +65,7 @@ std::vector<Token *> GetTokenSequence(std::string input) {
 void RunTests() {
     ASTTests();
     LexerTests();
+    std::cout << "Tests passed\n";
 }
 
 void LexerTests() {
@@ -92,6 +93,11 @@ void LexerTests() {
     assert(tokens[7]->kind == TOKEN_KIND::DivTok);
     assert(tokens[8]->kind == TOKEN_KIND::IntTok);
     assert(tokens[8]->attribute == "65");
+
+    tokens = GetTokenSequence("3 <= 4");
+    tokens = GetTokenSequence("3 >= 4");
+    tokens = GetTokenSequence("3 == 3");
+    tokens = GetTokenSequence("3 != 4");
 
     tokens = GetTokenSequence("!true");
     assert(tokens[0]->kind == TOKEN_KIND::NotTok);

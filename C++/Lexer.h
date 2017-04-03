@@ -140,10 +140,10 @@ Token * Lexer::Next() {
         return new Token(TOKEN_KIND::CommTok, temp);
     }
 
-    char test = LookAhead();
+    char lookAhead = LookAhead();
     Consume();
 
-    switch (test) {
+    switch (lookAhead) {
         case 0:
             ClearBuffer();
             return new Token(TOKEN_KIND::EOFTok);
@@ -183,6 +183,7 @@ Token * Lexer::Next() {
             return new Token(TOKEN_KIND::BitOrTok);
         case '!':
             if (LookAhead() == '=') {
+                Consume();
                 ClearBuffer();
                 return new Token(TOKEN_KIND::NeqTok);
             }
@@ -190,16 +191,19 @@ Token * Lexer::Next() {
             return new Token(TOKEN_KIND::NotTok);
         case '=':
             if (LookAhead() == '=') {
+                Consume();
                 ClearBuffer();
                 return new Token(TOKEN_KIND::EqTok);
             }
             throw std::invalid_argument("Unsupported syntax");
         case '<':
             if (LookAhead() == '=') {
+                Consume();
                 ClearBuffer();
                 return new Token(TOKEN_KIND::LtEqTok);
             }
             if (LookAhead() == '<') {
+                Consume();
                 ClearBuffer();
                 return new Token(TOKEN_KIND::BitLeftTok);
             }
@@ -207,10 +211,12 @@ Token * Lexer::Next() {
             return new Token(TOKEN_KIND::LtTok);
         case '>':
             if (LookAhead() == '=') {
+                Consume();
                 ClearBuffer();
                 return new Token(TOKEN_KIND::GtEqTok);
             }
             if (LookAhead() == '>') {
+                Consume();
                 ClearBuffer();
                 return new Token(TOKEN_KIND::BitRightTok);
             }
@@ -273,9 +279,9 @@ Token * Lexer::Next() {
             while (std::isdigit(LookAhead())) {
                 Consume();
             }
-            std::string test = buffer;
+            std::string bufferStore = buffer;
             ClearBuffer();
-            return new Token(TOKEN_KIND::IntTok, test);
+            return new Token(TOKEN_KIND::IntTok, bufferStore);
 
     }
     throw std::invalid_argument("Unsupported syntax");

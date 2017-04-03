@@ -19,6 +19,8 @@
 #define C_EVAL_H
 
 #include <cmath>
+#include <functional>
+#include <climits>
 #include "AST.h"
 #include "Type.h"
 #include "Value.h"
