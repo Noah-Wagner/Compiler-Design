@@ -19,6 +19,9 @@
 #define C_LEXER_H
 
 #include <string>
+#include <iostream>
+#include <vector>
+#include "Eval.h"
 
 enum TOKEN_KIND {
     EOFTok, AddTok,
@@ -128,6 +131,20 @@ struct Lexer {
     }
 
     Token * Next();
+
+    static std::vector<Token *> GetTokenSequence(std::string input) {
+        std::vector<Token *> tokens;
+        Token * token;
+        Lexer lexer(input);
+        while (!lexer.IsEof()) {
+            token = lexer.Next();
+            tokens.push_back(token);
+        }
+        token = lexer.Next();
+        tokens.push_back(token);
+        return tokens;
+    }
+
 };
 
 Token * Lexer::Next() {
@@ -287,6 +304,8 @@ Token * Lexer::Next() {
     throw std::invalid_argument("Unsupported syntax");
 
 }
+
+
 
 
 #endif //C_LEXER_H
