@@ -3,5 +3,5 @@ project(C__)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(SOURCE_FILES main.cpp AST.h Eval.h Type.h Value.h Lexer.h Parser.h)
+set(SOURCE_FILES main.cpp AST.h Eval.h Type.h Value.h Lexer.h Parser.h Statement.h Expression.h)
 add_executable(C++ ${SOURCE_FILES})
