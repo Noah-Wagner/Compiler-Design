@@ -5,18 +5,18 @@
 #ifndef C_STATEMENT_H
 #define C_STATEMENT_H
 
-#include "Expression.h"
+#include "Expr.h"
 
 struct Statement {
 
 
 };
 
-struct Expr_Stmt : Statement {
+struct ExprStmt : Statement {
 
-    Expression * expr;
+    Expr * expr;
 
-    Expr_Stmt(Expression * e) : expr(e) {};
+    ExprStmt(Expr * e) : expr(e) {};
 
 };
 

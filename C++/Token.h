@@ -5,7 +5,12 @@
 #ifndef C_TOKEN_H
 #define C_TOKEN_H
 
+#include <iostream>
+#include <vector>
+#include "Eval.h"
+
 enum TOKEN_KIND {
+
     EOFTok, AddTok,
     SubTok, MulTok,
     DivTok, ModTok,
@@ -19,13 +24,17 @@ enum TOKEN_KIND {
     BoolTok, CommTok,
     BitLeftTok, BitRightTok,
     XorTok,
-    BitAndTok, BitOrTok
+    BitAndTok, BitOrTok,
+
+
+    TrueKw
+
 };
 
 struct Token {
 
     TOKEN_KIND kind;
-    std::__1::string attribute;
+    std::string attribute;
 
     Token() {}
 
@@ -40,7 +49,7 @@ struct Token {
 
 };
 
-std::__1::string TokenToString(TOKEN_KIND token) {
+std::string TokenToString(TOKEN_KIND token) {
     switch (token) {
 
         case EOFTok: return "0/";
@@ -73,8 +82,6 @@ std::__1::string TokenToString(TOKEN_KIND token) {
     }
 }
 
-#include <iostream>
-#include <vector>
-#include "Eval.h"
+
 
 #endif //C_TOKEN_H

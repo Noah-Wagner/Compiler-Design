@@ -17,12 +17,15 @@
 
 #include <iostream>
 #include <vector>
-#include "AST.h"
+#include "Expr.h"
 #include "Eval.h"
 #include "assert.h"
 #include "Lexer.h"
+#include "Parser.h"
 
 void RunTests();
+
+void ParseTests();
 
 void ASTTests();
 
@@ -35,12 +38,16 @@ int main() {
         std::string input;
         std::getline(std::cin, input);
 
-        std::vector<Token *> tokens = Lexer::GetTokenSequence(input);
+        std::vector<Token *> tokens = Lexer::Lexe(input);
+
+        ExprStmt * stmt = Parser::Parse(tokens);
 
         for (int i = 0; i < tokens.size(); i++) {
             std::cout << '<' << TokenToString(tokens[i]->kind)
                       << ((tokens[i]->attribute == "") ? "> " : ", " + tokens[i]->attribute + "> ");
         }
+        Value r = eval(stmt->expr);
+        std::cout << std::endl << r.valueData.intData;
         std::cout << std::endl;
     }
 
@@ -48,22 +55,32 @@ int main() {
 }
 
 void RunTests() {
+    ParseTests();
     ASTTests();
     LexerTests();
     std::cout << "Tests passed\n";
 }
 
+void ParseTests() {
+    std::vector<Token *> tokens;
+
+    tokens = Lexer::Lexe("4 + 5");
+
+    ExprStmt * stmt = Parser::Parse(tokens);
+
+}
+
 void LexerTests() {
     std::vector<Token *> tokens;
 
-    tokens = Lexer::GetTokenSequence("4 + 5");
+    tokens = Lexer::Lexe("4 + 5");
     assert(tokens[0]->kind == TOKEN_KIND::IntTok);
     assert(tokens[0]->attribute == "4");
     assert(tokens[1]->kind == TOKEN_KIND::AddTok);
     assert(tokens[2]->kind == TOKEN_KIND::IntTok);
     assert(tokens[2]->attribute == "5");
 
-    tokens = Lexer::GetTokenSequence("364565 + 12345 - 5555 * 456 / 65");
+    tokens = Lexer::Lexe("364565 + 12345 - 5555 * 456 / 65");
     assert(tokens[0]->kind == TOKEN_KIND::IntTok);
     assert(tokens[0]->attribute == "364565");
     assert(tokens[1]->kind == TOKEN_KIND::AddTok);
@@ -79,30 +96,30 @@ void LexerTests() {
     assert(tokens[8]->kind == TOKEN_KIND::IntTok);
     assert(tokens[8]->attribute == "65");
 
-    tokens = Lexer::GetTokenSequence("3 <= 4");
-    tokens = Lexer::GetTokenSequence("3 >= 4");
-    tokens = Lexer::GetTokenSequence("3 == 3");
-    tokens = Lexer::GetTokenSequence("3 != 4");
+    tokens = Lexer::Lexe("3 <= 4");
+    tokens = Lexer::Lexe("3 >= 4");
+    tokens = Lexer::Lexe("3 == 3");
+    tokens = Lexer::Lexe("3 != 4");
 
-    tokens = Lexer::GetTokenSequence("!true");
+    tokens = Lexer::Lexe("!true");
     assert(tokens[0]->kind == TOKEN_KIND::NotTok);
     assert(tokens[1]->kind == TOKEN_KIND::BoolTok);
     assert(tokens[1]->attribute == "1");
 
-    tokens = Lexer::GetTokenSequence("true || false");
+    tokens = Lexer::Lexe("true || false");
     assert(tokens[0]->kind == TOKEN_KIND::BoolTok);
     assert(tokens[0]->attribute == "1");
     assert(tokens[1]->kind == TOKEN_KIND::OrTok);
     assert(tokens[2]->kind == TOKEN_KIND::BoolTok);
     assert(tokens[2]->attribute == "0");
 
-    tokens = Lexer::GetTokenSequence("#test");
+    tokens = Lexer::Lexe("#test");
     assert(tokens[0]->kind == TOKEN_KIND::CommTok);
     assert(tokens[0]->attribute == "test");
 
     bool exceptionThrown = false;
     try {
-        tokens = Lexer::GetTokenSequence("asdf");
+        tokens = Lexer::Lexe("asdf");
     } catch (...) {
         exceptionThrown = true;
     }

@@ -18,7 +18,7 @@
 #ifndef C_TYPE_H
 #define C_TYPE_H
 
-#include "AST.h"
+#include "Expr.h"
 
 TYPE Type(Expr *e) {
     struct V : Expr::Visitor {
