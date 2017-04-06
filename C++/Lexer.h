@@ -25,220 +25,239 @@
 #include "Token.h"
 
 struct Lexer {
-    const char * first;
-    const char * last;
-    std::string buffer;
+	const char * first;
+	const char * last;
+	std::string buffer;
 
-    Lexer() {
-        ClearBuffer();
-        const char * first = NULL;
-        const char * last = NULL;
-    }
+	Lexer() {
+		ClearBuffer();
+		const char * first = NULL;
+		const char * last = NULL;
+	}
 
-    Lexer(const std::string & str) {
-        first = &str[0];
-        last = &str[str.length() - 1];
-    }
+	Lexer(const std::string &str) {
+		first = &str[0];
+		last = &str[str.length() - 1];
+	}
 
-    bool IsEof() {
-        return first == last || *first == 0;
-    }
+	bool IsEof() {
+		return first == last || *first == 0;
+	}
 
-    char LookAhead() const {
-        return *first;
-    }
+	char LookAhead() const {
+		return *first;
+	}
 
-    void Consume() {
-        buffer += *first++;
-    }
+	void Consume() {
+		buffer += *first++;
+	}
 
-    void Comment() {
-        while (first != last) {
-            Consume();
-        }
-        Consume();
-    }
+	void Comment() {
+		while (first != last) {
+			Consume();
+		}
+		Consume();
+	}
 
-    void ClearBuffer() {
-        buffer = "";
-    }
+	void ClearBuffer() {
+		buffer = "";
+	}
 
-    Token * Next();
+	Token * Next();
 
-    static std::vector<Token *> Lexe(std::string input) {
-        std::vector<Token *> tokens;
-        Token * token;
-        Lexer lexer(input);
-        while (!lexer.IsEof()) {
-            token = lexer.Next();
-            tokens.push_back(token);
-        }
-        token = lexer.Next();
-        tokens.push_back(token);
-        return tokens;
-    }
+	static std::vector<Token *> Lexe(std::string input) {
+		std::vector<Token *> tokens;
+		Token * token;
+		Lexer lexer(input);
+		while (!lexer.IsEof()) {
+			token = lexer.Next();
+			tokens.push_back(token);
+		}
+		token = lexer.Next();
+		tokens.push_back(token);
+		return tokens;
+	}
 
 };
 
 Token * Lexer::Next() {
-    std::string temp;
+	std::string temp;
 
-    if (LookAhead() == '#') {
-        Comment();
-        temp = buffer.substr(1);
-        ClearBuffer();
-        return new Token(TOKEN_KIND::CommTok, temp);
-    }
+	if (LookAhead() == '#') {
+		Comment();
+		temp = buffer.substr(1);
+		ClearBuffer();
+		return new Token(TOKEN_KIND::CommTok, temp);
+	}
 
-    char lookAhead = LookAhead();
-    Consume();
+	char lookAhead = LookAhead();
+	Consume();
 
-    switch (lookAhead) {
-        case 0:
-            ClearBuffer();
-            return new Token(TOKEN_KIND::EOFTok);
-        case ' ':
-            ClearBuffer();
-            return Next();
-        case '+':
-            ClearBuffer();
-            return new Token(TOKEN_KIND::AddTok);
-        case '-':
-            ClearBuffer();
-            return new Token(TOKEN_KIND::SubTok);
-        case '*':
-            ClearBuffer();
-            return new Token(TOKEN_KIND::MulTok);
-        case '/':
-            ClearBuffer();
-            return new Token(TOKEN_KIND::DivTok);
-        case '%':
-            ClearBuffer();
-            return new Token(TOKEN_KIND::ModTok);
-        case '&':
-            if (LookAhead() == '&') {
-                Consume();
-                ClearBuffer();
-                return new Token(TOKEN_KIND::AndTok);
-            }
-            ClearBuffer();
-            return new Token(TOKEN_KIND::BitAndTok);
-        case '|':
-            if (LookAhead() == '|') {
-                Consume();
-                ClearBuffer();
-                return new Token(TOKEN_KIND::OrTok);
-            }
-            ClearBuffer();
-            return new Token(TOKEN_KIND::BitOrTok);
-        case '!':
-            if (LookAhead() == '=') {
-                Consume();
-                ClearBuffer();
-                return new Token(TOKEN_KIND::NeqTok);
-            }
-            ClearBuffer();
-            return new Token(TOKEN_KIND::NotTok);
-        case '=':
-            if (LookAhead() == '=') {
-                Consume();
-                ClearBuffer();
-                return new Token(TOKEN_KIND::EqTok);
-            }
-            throw std::invalid_argument("Unsupported syntax");
-        case '<':
-            if (LookAhead() == '=') {
-                Consume();
-                ClearBuffer();
-                return new Token(TOKEN_KIND::LtEqTok);
-            }
-            if (LookAhead() == '<') {
-                Consume();
-                ClearBuffer();
-                return new Token(TOKEN_KIND::BitLeftTok);
-            }
-            ClearBuffer();
-            return new Token(TOKEN_KIND::LtTok);
-        case '>':
-            if (LookAhead() == '=') {
-                Consume();
-                ClearBuffer();
-                return new Token(TOKEN_KIND::GtEqTok);
-            }
-            if (LookAhead() == '>') {
-                Consume();
-                ClearBuffer();
-                return new Token(TOKEN_KIND::BitRightTok);
-            }
-            ClearBuffer();
-            return new Token(TOKEN_KIND::GtTok);
-        case '?':
-            ClearBuffer();
-            return new Token(TOKEN_KIND::QuTok);
-        case ':':
-            ClearBuffer();
-            return new Token(TOKEN_KIND::ColonTok);
-        case '(':
-            ClearBuffer();
-            return new Token(TOKEN_KIND::LeftParenTok);
-        case ')':
-            ClearBuffer();
-            return new Token(TOKEN_KIND::RightParenTok);
-        case '^':
-            ClearBuffer();
-            return new Token(TOKEN_KIND::BitXorTok);
-        case 't':
-            if (LookAhead() == 'r') {
-                Consume();
-                if (LookAhead() == 'u') {
-                    Consume();
-                    if (LookAhead() == 'e') {
-                        Consume();
-                        ClearBuffer();
-                        return new Token(TOKEN_KIND::BoolTok, 1);
-                    }
-                }
-            }
-            throw std::invalid_argument("Unsupported syntax");
-        case 'f':
-            if (LookAhead() == 'a') {
-                Consume();
-                if (LookAhead() == 'l') {
-                    Consume();
-                    if (LookAhead() == 's') {
-                        Consume();
-                        if (LookAhead() == 'e') {
-                            Consume();
-                            ClearBuffer();
-                            return new Token(TOKEN_KIND::BoolTok, 0);
-                        }
-                    }
-                }
-            }
-            throw std::invalid_argument("Unsupported syntax");
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-            while (std::isdigit(LookAhead())) {
-                Consume();
-            }
-            std::string bufferStore = buffer;
-            ClearBuffer();
-            return new Token(TOKEN_KIND::IntTok, bufferStore);
+	switch (lookAhead) {
+		case 0:
+			ClearBuffer();
+			return new Token(TOKEN_KIND::EOFTok);
+		case ' ':
+			ClearBuffer();
+			return Next();
+		case '+':
+			ClearBuffer();
+			return new Token(TOKEN_KIND::AddTok);
+		case '-':
+			ClearBuffer();
+			return new Token(TOKEN_KIND::SubTok);
+		case '*':
+			ClearBuffer();
+			return new Token(TOKEN_KIND::MulTok);
+		case '/':
+			ClearBuffer();
+			return new Token(TOKEN_KIND::DivTok);
+		case '%':
+			ClearBuffer();
+			return new Token(TOKEN_KIND::ModTok);
+		case '&':
+			if (LookAhead() == '&') {
+				Consume();
+				ClearBuffer();
+				return new Token(TOKEN_KIND::AndTok);
+			}
+			ClearBuffer();
+			return new Token(TOKEN_KIND::BitAndTok);
+		case '|':
+			if (LookAhead() == '|') {
+				Consume();
+				ClearBuffer();
+				return new Token(TOKEN_KIND::OrTok);
+			}
+			ClearBuffer();
+			return new Token(TOKEN_KIND::BitOrTok);
+		case '!':
+			if (LookAhead() == '=') {
+				Consume();
+				ClearBuffer();
+				return new Token(TOKEN_KIND::NeqTok);
+			}
+			ClearBuffer();
+			return new Token(TOKEN_KIND::NotTok);
+		case '=':
+			if (LookAhead() == '=') {
+				Consume();
+				ClearBuffer();
+				return new Token(TOKEN_KIND::EqTok);
+			}
+			throw std::invalid_argument("Unsupported syntax");
+		case '<':
+			if (LookAhead() == '=') {
+				Consume();
+				ClearBuffer();
+				return new Token(TOKEN_KIND::LtEqTok);
+			}
+			if (LookAhead() == '<') {
+				Consume();
+				ClearBuffer();
+				return new Token(TOKEN_KIND::BitLeftTok);
+			}
+			ClearBuffer();
+			return new Token(TOKEN_KIND::LtTok);
+		case '>':
+			if (LookAhead() == '=') {
+				Consume();
+				ClearBuffer();
+				return new Token(TOKEN_KIND::GtEqTok);
+			}
+			if (LookAhead() == '>') {
+				Consume();
+				ClearBuffer();
+				return new Token(TOKEN_KIND::BitRightTok);
+			}
+			ClearBuffer();
+			return new Token(TOKEN_KIND::GtTok);
+		case '?':
+			ClearBuffer();
+			return new Token(TOKEN_KIND::QuTok);
+		case ':':
+			ClearBuffer();
+			return new Token(TOKEN_KIND::ColonTok);
+		case '(':
+			ClearBuffer();
+			return new Token(TOKEN_KIND::LeftParenTok);
+		case ')':
+			ClearBuffer();
+			return new Token(TOKEN_KIND::RightParenTok);
+		case '^':
+			ClearBuffer();
+			return new Token(TOKEN_KIND::BitXorTok);
+		case 't':
+			if (LookAhead() == 'r') {
+				Consume();
+				if (LookAhead() == 'u') {
+					Consume();
+					if (LookAhead() == 'e') {
+						Consume();
+						ClearBuffer();
+						return new Token(TOKEN_KIND::BoolTok, 1);
+					}
+				}
+			}
+			throw std::invalid_argument("Unsupported syntax");
+		case 'f':
+			if (LookAhead() == 'a') {
+				Consume();
+				if (LookAhead() == 'l') {
+					Consume();
+					if (LookAhead() == 's') {
+						Consume();
+						if (LookAhead() == 'e') {
+							Consume();
+							ClearBuffer();
+							return new Token(TOKEN_KIND::BoolTok, 0);
+						}
+					}
+				}
+			}
+			throw std::invalid_argument("Unsupported syntax");
+		case '0':
+			if (LookAhead() == 'b') {
+				Consume();
+				ClearBuffer();
+				while (std::isdigit(LookAhead())) {
+					Consume();
+				}
+				std::string bufferStore = buffer;
+				ClearBuffer();
+				return new Token(TOKEN_KIND::IntTok, std::stoi(bufferStore, nullptr, 2));
+			}
+			if (LookAhead() == 'x') {
+				Consume();
+				ClearBuffer();
+				while (std::isxdigit(LookAhead())) {
+					Consume();
+				}
+				std::string bufferStore = buffer;
+				ClearBuffer();
+				return new Token(TOKEN_KIND::IntTok, std::stoi(bufferStore, nullptr, 16));
+			}
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+			while (std::isdigit(LookAhead())) {
+				Consume();
+			}
+			std::string bufferStore = buffer;
+			ClearBuffer();
+			return new Token(TOKEN_KIND::IntTok, bufferStore);
 
-    }
-    throw std::invalid_argument("Unsupported syntax");
+	}
+
+	throw std::invalid_argument("Unsupported syntax");
 
 }
-
-
 
 
 #endif //C_LEXER_H

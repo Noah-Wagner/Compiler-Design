@@ -144,8 +144,14 @@ void ParseTests() {
 	stmt = Parser::Parse("3 >= 4");
 	assert(!eval(stmt->expr).valueData.boolData);
 
+	stmt = Parser::Parse("0b10 + 0b10");
+	assert(eval(stmt->expr).valueData.intData == 0b10 + 0b10);
 
+	stmt = Parser::Parse("0b11 * 0b10");
+	assert(eval(stmt->expr).valueData.intData == 0b11 * 0b10);
 
+	stmt = Parser::Parse("0xA1 * 0xAB");
+	assert(eval(stmt->expr).valueData.intData == 0xA1 * 0xAB);
 
 
 }
