@@ -35,8 +35,14 @@ TYPE Type(Expr *e) {
         void visit(OrExpr *e) {
             r = TYPE::BoolType;
         }
-        void visit(XorExpr *e) {
-            r = TYPE::BoolType;
+		void visit(BitAndExpr *e) {
+			r = TYPE::IntType;
+		}
+        void visit(BitOrExpr *e) {
+            r = TYPE::IntType;
+        }
+        void visit(BitXorExpr *e) {
+            r = TYPE::IntType;
         }
         void visit(AddExpr *e) {
             r = TYPE::IntType;

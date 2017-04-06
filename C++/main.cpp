@@ -68,6 +68,86 @@ void ParseTests() {
 
     ExprStmt * stmt = Parser::Parse(tokens);
 
+    assert(eval(stmt->expr).valueData.intData == 9);
+
+    stmt = Parser::Parse("4 - 6");
+    assert(eval(stmt->expr).valueData.intData == -2);
+
+    stmt = Parser::Parse("23 * 2");
+    assert(eval(stmt->expr).valueData.intData == 46);
+
+    stmt = Parser::Parse("23 * -2");
+    assert(eval(stmt->expr).valueData.intData == -46);
+
+    stmt = Parser::Parse("24 / 12");
+    assert(eval(stmt->expr).valueData.intData == 2);
+
+    stmt = Parser::Parse("25 % 3");
+    assert(eval(stmt->expr).valueData.intData == 1);
+
+    stmt = Parser::Parse("14 + 3 * 2");
+    assert(eval(stmt->expr).valueData.intData == 20);
+
+    stmt = Parser::Parse("14 + 3 * 2 * 2");
+    assert(eval(stmt->expr).valueData.intData == 26);
+
+    stmt = Parser::Parse("14 + 3 * 2 * 2 / 2");
+    assert(eval(stmt->expr).valueData.intData == 20);
+
+    stmt = Parser::Parse("true");
+    assert(eval(stmt->expr).valueData.boolData);
+
+    stmt = Parser::Parse("false");
+    assert(!eval(stmt->expr).valueData.boolData);
+
+    stmt = Parser::Parse("!false");
+    assert(eval(stmt->expr).valueData.boolData);
+
+    stmt = Parser::Parse("!true");
+    assert(!eval(stmt->expr).valueData.boolData);
+
+	stmt = Parser::Parse("!true && false");
+	assert(!eval(stmt->expr).valueData.boolData);
+
+	stmt = Parser::Parse("!false && true");
+	assert(eval(stmt->expr).valueData.boolData);
+
+	stmt = Parser::Parse("true || true && false");
+	assert(eval(stmt->expr).valueData.boolData);
+
+	stmt = Parser::Parse("#comment test");
+
+	stmt = Parser::Parse("3 || 5");
+	assert(eval(stmt->expr).valueData.boolData == 1);
+
+	stmt = Parser::Parse("3 | 4");
+	assert(eval(stmt->expr).valueData.intData == 7);
+
+	stmt = Parser::Parse("3 & 7");
+	assert(eval(stmt->expr).valueData.intData == 3);
+
+	stmt = Parser::Parse("3 < 7");
+	assert(eval(stmt->expr).valueData.boolData);
+
+	stmt = Parser::Parse("3 <= 7");
+	assert(eval(stmt->expr).valueData.boolData);
+
+	stmt = Parser::Parse("4 <= 3");
+	assert(!eval(stmt->expr).valueData.boolData);
+
+	stmt = Parser::Parse("4 > 3");
+	assert(eval(stmt->expr).valueData.boolData);
+
+	stmt = Parser::Parse("4 >= 4");
+	assert(eval(stmt->expr).valueData.boolData);
+
+	stmt = Parser::Parse("3 >= 4");
+	assert(!eval(stmt->expr).valueData.boolData);
+
+
+
+
+
 }
 
 void LexerTests() {

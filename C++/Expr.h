@@ -25,8 +25,10 @@ struct BoolExpr;
 struct AndExpr;
 struct OrExpr;
 struct NotExpr;
-struct XorExpr;
 
+struct BitAndExpr;
+struct BitOrExpr;
+struct BitXorExpr;
 
 struct IntExpr;
 struct AddExpr;
@@ -68,7 +70,11 @@ struct Expr::Visitor {
 
     virtual void visit(OrExpr *) = 0;
 
-    virtual void visit(XorExpr *) = 0;
+	virtual void visit(BitAndExpr *) = 0;
+
+	virtual void visit(BitOrExpr *) = 0;
+
+    virtual void visit(BitXorExpr *) = 0;
 
     virtual void visit(NotExpr *) = 0;
 
@@ -148,7 +154,29 @@ struct OrExpr : Expr {
     OrExpr(Expr *e1, Expr *e2) : e1(e1), e2(e2) {}
 };
 
-struct XorExpr : Expr {
+struct BitAndExpr : Expr {
+	Expr *e1;
+	Expr *e2;
+
+	virtual void accept(Visitor &v) {
+		v.visit(this);
+	}
+
+	BitAndExpr(Expr *e1, Expr *e2) : e1(e1), e2(e2) {}
+};
+
+struct BitOrExpr : Expr {
+	Expr *e1;
+	Expr *e2;
+
+	virtual void accept(Visitor &v) {
+		v.visit(this);
+	}
+
+	BitOrExpr(Expr *e1, Expr *e2) : e1(e1), e2(e2) {}
+};
+
+struct BitXorExpr : Expr {
     Expr *e1;
     Expr *e2;
 
@@ -156,7 +184,7 @@ struct XorExpr : Expr {
         v.visit(this);
     }
 
-    XorExpr(Expr *e1, Expr *e2) : e1(e1), e2(e2) {}
+    BitXorExpr(Expr *e1, Expr *e2) : e1(e1), e2(e2) {}
 };
 
 struct IntExpr : Expr {

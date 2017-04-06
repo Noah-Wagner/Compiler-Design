@@ -45,15 +45,23 @@ Value eval(Expr *e) {
         };
 
         void visit(AndExpr *e) {
-            r = performBooleanOperation(e->e1, e->e2, [](bool x, bool y) { return x & y; });
+            r = performBooleanOperation(e->e1, e->e2, [](bool x, bool y) { return x && y; });
         };
 
         void visit(OrExpr *e) {
-            r = performBooleanOperation(e->e1, e->e2, [](bool x, bool y) { return x | y; });
+            r = performBooleanOperation(e->e1, e->e2, [](bool x, bool y) { return x || y; });
         };
 
-        void visit(XorExpr *e) {
-            r = performBooleanOperation(e->e1, e->e2, [](bool x, bool y) { return x ^ y; });
+		void visit(BitAndExpr * e) {
+			r = performIntegerOperation(e->e1, e->e2, [](int x, int y) { return x & y; });
+		};
+
+		void visit(BitOrExpr * e) {
+			r = performIntegerOperation(e->e1, e->e2, [](int x, int y) { return x | y; });
+		};
+
+        void visit(BitXorExpr * e) {
+            r = performIntegerOperation(e->e1, e->e2, [](int x, int y) { return x ^ y; });
         };
 
         void visit(NotExpr *e) {

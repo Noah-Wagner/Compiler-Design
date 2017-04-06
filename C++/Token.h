@@ -23,7 +23,7 @@ enum TOKEN_KIND {
     RightParenTok, IntTok,
     BoolTok, CommTok,
     BitLeftTok, BitRightTok,
-    XorTok,
+    BitXorTok,
     BitAndTok, BitOrTok,
 
 
@@ -76,7 +76,7 @@ std::string TokenToString(TOKEN_KIND token) {
         case CommTok: return "#";
         case BitLeftTok: return "<<";
         case BitRightTok: return ">>";
-        case XorTok: return "^";
+        case BitXorTok: return "^";
         case BitAndTok: return "&";
         case BitOrTok: return "|";
     }

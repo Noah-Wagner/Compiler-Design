@@ -186,7 +186,7 @@ Token * Lexer::Next() {
             return new Token(TOKEN_KIND::RightParenTok);
         case '^':
             ClearBuffer();
-            return new Token(TOKEN_KIND::XorTok);
+            return new Token(TOKEN_KIND::BitXorTok);
         case 't':
             if (LookAhead() == 'r') {
                 Consume();
