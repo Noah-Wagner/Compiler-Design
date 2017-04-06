@@ -32,6 +32,8 @@ void ASTTests();
 void LexerTests();
 
 int main() {
+//	std::vector<Token *> tokens1 = Lexer::Lexe("3   ");
+
     RunTests();
 
     while (true) {

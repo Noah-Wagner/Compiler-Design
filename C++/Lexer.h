@@ -35,9 +35,12 @@ struct Lexer {
 		const char * last = NULL;
 	}
 
-	Lexer(const std::string &str) {
-		first = &str[0];
-		last = &str[str.length() - 1];
+	std::string ProcessString(const std::string &basic_string);
+
+	Lexer(const std::string &parseString) {
+//		std::string str = ProcessString(parseString);
+		first = &parseString[0];
+		last = &parseString[parseString.length() - 1];
 	}
 
 	bool IsEof() {
@@ -257,6 +260,17 @@ Token * Lexer::Next() {
 
 	throw std::invalid_argument("Unsupported syntax");
 
+}
+
+std::string Lexer::ProcessString(const std::string &basic_string) {
+	std::string str(basic_string);
+	size_t first = str.find_first_not_of(' ');
+	if (std::string::npos == first)
+	{
+		return str;
+	}
+	size_t last = str.find_last_not_of(' ');
+	return str.substr(first, (last - first + 1)) + ' ';
 }
 
 
