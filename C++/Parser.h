@@ -260,6 +260,7 @@ Expr * Parser::GetUnaryExpr() {
 }
 
 Expr * Parser::GetPrimaryExpr() {
+	Expr * e1;
 	switch (Peek()->kind) {
 		case BoolTok:
 			return trans.GetBoolExpr(Poll());
@@ -267,6 +268,11 @@ Expr * Parser::GetPrimaryExpr() {
 			return trans.GetIntExpr(Poll());
 		case CommTok:
 			return nullptr;
+		case LeftParenTok:
+			Poll();
+			e1 = GetExpression();
+			Poll(); // TODO: Add error for no matching right paren
+			return e1;
 		default:
 			throw std::runtime_error("OH NO");
 	}

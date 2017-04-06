@@ -153,6 +153,11 @@ void ParseTests() {
 	stmt = Parser::Parse("0xA1 * 0xAB");
 	assert(eval(stmt->expr).valueData.intData == 0xA1 * 0xAB);
 
+	stmt = Parser::Parse("3 + 4 * 3");
+	assert(eval(stmt->expr).valueData.intData == 15);
+
+	stmt = Parser::Parse("(3 + 4) * 3");
+	assert(eval(stmt->expr).valueData.intData == 21);
 
 }
 
