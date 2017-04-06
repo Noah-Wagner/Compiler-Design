@@ -1,5 +1,5 @@
 # Noah Wagner - Compiler Design 
-# Homework 2
+# Homework 3
 ### Calculator Application
 
 # Overview
