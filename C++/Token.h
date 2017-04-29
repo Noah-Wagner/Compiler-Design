@@ -43,6 +43,8 @@ enum TOKEN_KIND {
 
     SemiColTok,
 
+    VarNameTok,
+
 
 
     TrueKw
