@@ -43,12 +43,15 @@ int main() {
         std::getline(std::cin, input);
 
         std::vector<Token *> tokens = Lexer::Lexe(input);
+
         for (int i = 0; i < tokens.size(); i++) {
             std::cout << '<' << TokenToString(tokens[i]->kind)
                       << ((tokens[i]->attribute == "") ? "> " : ", " + tokens[i]->attribute + "> ");
         }
 
         ExprStmt * stmt = Parser::Parse(tokens);
+
+
 
         Value r = eval(stmt->expr);
         std::cout << std::endl << r.valueData.intData;
@@ -70,9 +73,6 @@ void RunTests() {
 void Tests() {
 
     std::vector<Token *> tokens;
-    tokens = Lexer::Lexe("bool x = true;");
-    std::cout << "";
-
 
 }
 

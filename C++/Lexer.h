@@ -281,17 +281,6 @@ Token * Lexer::Next() {
 			std::string bufferStore = buffer;
 			ClearBuffer();
 			return new Token(TOKEN_KIND::IntTok, bufferStore);
-        default:
-            while (std::isalpha(LookAhead())) {
-                Consume();
-            }
-            bufferStore = buffer;
-            ClearBuffer();
-            return new Token();
-
-
-
-
 
 	}
 
