@@ -23,7 +23,7 @@
 #include "Lexer.h"
 #include "Parser.h"
 
-void RunTests();
+void CodeGenTests();
 
 void ParseTests();
 
@@ -31,7 +31,10 @@ void ASTTests();
 
 void LexerTests();
 
-void Tests() ;
+void RunTests() ;
+
+
+void PrintTokens(const std::vector<Token *> &tokens);
 
 int main() {
 //	std::vector<Token *> tokens1 = Lexer::Lexe("3   ");
@@ -44,14 +47,9 @@ int main() {
 
         std::vector<Token *> tokens = Lexer::Lexe(input);
 
-        for (int i = 0; i < tokens.size(); i++) {
-            std::cout << '<' << TokenToString(tokens[i]->kind)
-                      << ((tokens[i]->attribute == "") ? "> " : ", " + tokens[i]->attribute + "> ");
-        }
+        PrintTokens(tokens);
 
         ExprStmt * stmt = Parser::Parse(tokens);
-
-
 
         Value r = eval(stmt->expr);
         std::cout << std::endl << r.valueData.intData;
@@ -61,16 +59,23 @@ int main() {
     return 0;
 }
 
+void PrintTokens(const std::vector<Token *> &tokens) {
+    for (int i = 0; i < tokens.size(); i++) {
+            std::cout << '<' << TokenToString(tokens[i]->kind)
+                      << ((tokens[i]->attribute == "") ? "> " : ", " + tokens[i]->attribute + "> ");
+        }
+}
+
 void RunTests() {
 
-    Tests();
+    CodeGenTests();
     ParseTests();
     ASTTests();
     LexerTests();
     std::cout << "Tests passed\n";
 }
 
-void Tests() {
+void CodeGenTests() {
 
     std::vector<Token *> tokens;
 
@@ -80,9 +85,11 @@ void ParseTests() {
 
     std::vector<Token *> tokens;
 
-    tokens = Lexer::Lexe("4 + 5");
-
+    tokens = Lexer::Lexe("var int x = 3;");
     ExprStmt * stmt = Parser::Parse(tokens);
+
+    tokens = Lexer::Lexe("var bool y = true;");
+    stmt = Parser::Parse(tokens);
 
     assert(eval(stmt->expr).valueData.intData == 9);
 
