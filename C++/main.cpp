@@ -59,6 +59,7 @@ int main() {
 }
 
 void RunTests() {
+
     Tests();
     ParseTests();
     ASTTests();
@@ -68,11 +69,15 @@ void RunTests() {
 
 void Tests() {
 
+    std::vector<Token *> tokens;
+    tokens = Lexer::Lexe("bool x = true;");
+    std::cout << "";
 
 
 }
 
 void ParseTests() {
+
     std::vector<Token *> tokens;
 
     tokens = Lexer::Lexe("4 + 5");
