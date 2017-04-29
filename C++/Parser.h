@@ -27,9 +27,10 @@ struct Parser {
 
 	Translator trans;
 	std::vector<Token *> tokens;
-	std::vector<Token *>::iterator iter;
+//	std::vector<Token *>::iterator iter;
+    int pos = 0;
 
-	Parser(std::vector<Token *> tokens) : tokens(tokens), iter(tokens.begin()) {};
+	Parser(std::vector<Token *> tokens) : tokens(tokens) {};
 
 
 	static ExprStmt * Parse(std::vector<Token *> tokens) {
@@ -45,19 +46,19 @@ struct Parser {
 	}
 
 	Token * Poll() {
-		if (iter == tokens.end()) {
+		if (pos == tokens.size()) {
 			return nullptr;
 		} else {
-			return *iter++;
+			return tokens[pos++];
 		}
 	}
 
 	Token * Peek() {
 		try {
-			if (iter == tokens.end()) {
+			if (pos == tokens.size()) {
 				return nullptr;
 			} else {
-				return *iter;
+				return tokens[pos];
 			}
 		} catch (...) {
 			return nullptr;
@@ -84,13 +85,18 @@ struct Parser {
 	}
 
 	ExprStmt * GetStatement();
-	ExprStmt * GetExprStmt();
-	Expr * GetExpression();
-	Expr * GetAddExpr();
-	Expr * GetMultiExpr();
-	Expr * GetUnaryExpr();
-	Expr * GetPrimaryExpr();
 
+	ExprStmt * GetExprStmt();
+
+	Expr * GetExpression();
+
+	Expr * GetAddExpr();
+
+	Expr * GetMultiExpr();
+
+	Expr * GetUnaryExpr();
+
+	Expr * GetPrimaryExpr();
 
 	Expr * GetOrderExpr();
 
@@ -285,6 +291,8 @@ Expr * Parser::GetPrimaryExpr() {
 			e1 = GetExpression();
 			Poll(); // TODO: Add error for no matching right paren
 			return e1;
+        case EOFTok:
+            throw std::runtime_error("WOOPS");
 		default:
 			throw std::runtime_error("OH NO");
 	}

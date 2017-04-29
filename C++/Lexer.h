@@ -181,6 +181,9 @@ Token * Lexer::Next() {
 		case ':':
 			ClearBuffer();
 			return new Token(TOKEN_KIND::ColonTok);
+        case ';':
+            ClearBuffer();
+            return new Token(TOKEN_KIND::SemiColTok);
 		case '(':
 			ClearBuffer();
 			return new Token(TOKEN_KIND::LeftParenTok);
@@ -190,6 +193,29 @@ Token * Lexer::Next() {
 		case '^':
 			ClearBuffer();
 			return new Token(TOKEN_KIND::BitXorTok);
+        case 'i':
+            if (LookAhead() == 'n') {
+                Consume();
+                if (LookAhead() == 't') {
+                    Consume();
+                    ClearBuffer();
+                    return new Token(TOKEN_KIND::VarIntTok);
+                }
+            }
+            throw std::invalid_argument("Unsupported syntax");
+        case 'b':
+            if (LookAhead() == 'o') {
+                Consume();
+                if (LookAhead() == 'o') {
+                    Consume();
+                    if (LookAhead() == 'l') {
+                        Consume();
+                        ClearBuffer();
+                        return new Token(TOKEN_KIND::VarBoolTok);
+                    }
+                }
+            }
+            throw std::invalid_argument("Unsupported syntax");
 		case 't':
 			if (LookAhead() == 'r') {
 				Consume();

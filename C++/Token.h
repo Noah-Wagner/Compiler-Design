@@ -39,6 +39,11 @@ enum TOKEN_KIND {
     BitXorTok,
     BitAndTok, BitOrTok,
 
+    VarIntTok, VarBoolTok,
+
+    SemiColTok,
+
+
 
     TrueKw
 
@@ -57,7 +62,7 @@ struct Token {
     Token(TOKEN_KIND kind, int attr)
             : kind(kind), attribute(std::to_string(attr)) {}
 
-    Token(TOKEN_KIND kind, std::__1::string str)
+    Token(TOKEN_KIND kind, std::string str)
             : kind(kind), attribute(str) {}
 
 };
