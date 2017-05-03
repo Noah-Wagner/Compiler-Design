@@ -1,6 +1,6 @@
 # Noah Wagner - Compiler Design 
 # Homework 3
-### Calculator Application
+### Noah++
 
 # Overview
 The newest addition to this project is the implementation of a parser. The parser traverses through a sequence of tokens (provided by previously implemented lexical analyzer) to produce an AST. This means that the front-end of the compiler is now functional, parsing and correctly translating concretely written commands to internal syntax.
