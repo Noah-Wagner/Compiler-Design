@@ -27,7 +27,6 @@ struct Parser {
 
 	Translator trans;
 	std::vector<Token *> tokens;
-//	std::vector<Token *>::iterator iter;
     int pos = 0;
 
 	Parser(std::vector<Token *> tokens) : tokens(tokens) {};
@@ -111,6 +110,8 @@ struct Parser {
 	Expr * GetBitOrExpr();
 
 	Expr * GetBitXorExpr();
+
+    Expr *GetAssignExpr();
 };
 
 ExprStmt * Parser::GetStatement() {
@@ -118,18 +119,27 @@ ExprStmt * Parser::GetStatement() {
 }
 
 ExprStmt * Parser::GetExprStmt() {
-	Expr * expr = GetExpression();
-	return trans.GetExprStmt(expr);
+    Expr * expr = GetExpression();
+    return trans.GetExprStmt(expr);
 }
 
 Expr * Parser::GetExpression() {
-	return GetOrExpr();
+	return GetAssignExpr();
+}
+
+Expr * Parser::GetAssignExpr() {
+    Expr * e1 = GetOrExpr();
+    while (true) {
+        if (Match(EqTok)) {
+            Expr * e2 = GetAssignExpr();
+        }
+    }
 }
 
 Expr * Parser::GetOrExpr() {
 	Expr * e1 = GetAndExpr();
 	while (true) {
-		if (Match(AndTok)) {
+		if (Match(OrTok)) {
 			Expr * e2 = GetAndExpr();
 			e1 = trans.GetOrExpr(e1, e2);
 		} else {

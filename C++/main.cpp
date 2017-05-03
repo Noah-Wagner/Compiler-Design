@@ -39,6 +39,8 @@ void PrintTokens(const std::vector<Token *> &tokens);
 int main() {
 //	std::vector<Token *> tokens1 = Lexer::Lexe("3   ");
 
+    Parser::Parse(Lexer::Lexe("3 + 5"));
+
     RunTests();
 
     while (true) {

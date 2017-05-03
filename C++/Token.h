@@ -102,6 +102,12 @@ std::string TokenToString(TOKEN_KIND token) {
     }
 }
 
+struct KeywordTable : std::unordered_map<std::string, token_kind> {
+
+
+
+};
+
 
 
 #endif //C_TOKEN_H
