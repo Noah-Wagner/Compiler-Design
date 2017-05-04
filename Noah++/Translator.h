@@ -20,7 +20,7 @@
 
 #include "Expr.h"
 #include "Token.h"
-#include "Statement.h"
+#include "Stmt.h"
 
 
 struct Translator {
@@ -109,7 +109,9 @@ struct Translator {
 		return new BitXorExpr(e1, e2);
 	}
 
-
+    Expr * GetAssignExpr(Expr * pExpr, Expr * pExpr1) {
+        return nullptr;
+    }
 };
 
 #endif //C_TRANSLATOR_H

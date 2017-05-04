@@ -20,12 +20,12 @@
 
 #include "Expr.h"
 
-struct Statement {
+struct Stmt {
 
 
 };
 
-struct ExprStmt : Statement {
+struct ExprStmt : Stmt {
 
     Expr * expr;
 

@@ -17,11 +17,14 @@
 
 #include <iostream>
 #include <vector>
+#include <fstream>
 #include "Expr.h"
 #include "Eval.h"
 #include "assert.h"
 #include "Lexer.h"
 #include "Parser.h"
+#include "CodeGen/CodeGen.h"
+#include "CodeGen/JVMCodeGen.h"
 
 void CodeGenTests();
 
@@ -31,21 +34,55 @@ void ASTTests();
 
 void LexerTests();
 
-void RunTests() ;
+void RunTests();
 
 
 void PrintTokens(const std::vector<Token *> &tokens);
 
-int main() {
-//	std::vector<Token *> tokens1 = Lexer::Lexe("3   ");
+void RunTestLoop();
 
-    Parser::Parse(Lexer::Lexe("3 + 5"));
+std::string ReadFile(std::string fileName) ;
 
-    RunTests();
+int main(int argc, char * argv[]) {
 
+//    std::cout << argv[];
+
+//    LexerTests();
+
+    std::cout << "tests";
+
+
+    std::string file_contents = ReadFile(argv[1]);
+
+    std::vector<Token *> tokens = Lexer::Lexe(file_contents);
+
+    Stmt * stmt = Parser::Parse(tokens);
+
+    CodeGen * gen = new JVMCodeGen;
+    gen->Generate(nullptr);
+
+
+
+
+
+
+//    RunTests();
+
+    RunTestLoop();
+
+    return 0;
+}
+
+std::string ReadFile(std::string fileName) {
+    std::ifstream file(fileName);
+    return std::string((std::istreambuf_iterator<char>(file)),
+                       std::istreambuf_iterator<char>());
+}
+
+void RunTestLoop() {
     while (true) {
-        std::string input;
-        std::getline(std::cin, input);
+        std::__cxx11::string input;
+        getline(std::cin, input);
 
         std::vector<Token *> tokens = Lexer::Lexe(input);
 
@@ -57,15 +94,13 @@ int main() {
         std::cout << std::endl << r.valueData.intData;
         std::cout << std::endl;
     }
-
-    return 0;
 }
 
 void PrintTokens(const std::vector<Token *> &tokens) {
     for (int i = 0; i < tokens.size(); i++) {
-            std::cout << '<' << TokenToString(tokens[i]->kind)
-                      << ((tokens[i]->attribute == "") ? "> " : ", " + tokens[i]->attribute + "> ");
-        }
+        std::cout << '<' << TokenToString(tokens[i]->kind)
+                  << ((tokens[i]->attribute == "") ? "> " : ", " + tokens[i]->attribute + "> ");
+    }
 }
 
 void RunTests() {
@@ -131,58 +166,58 @@ void ParseTests() {
     stmt = Parser::Parse("!true");
     assert(!eval(stmt->expr).valueData.boolData);
 
-	stmt = Parser::Parse("!true && false");
-	assert(!eval(stmt->expr).valueData.boolData);
+    stmt = Parser::Parse("!true && false");
+    assert(!eval(stmt->expr).valueData.boolData);
 
-	stmt = Parser::Parse("!false && true");
-	assert(eval(stmt->expr).valueData.boolData);
+    stmt = Parser::Parse("!false && true");
+    assert(eval(stmt->expr).valueData.boolData);
 
-	stmt = Parser::Parse("true || true && false");
-	assert(eval(stmt->expr).valueData.boolData);
+    stmt = Parser::Parse("true || true && false");
+    assert(eval(stmt->expr).valueData.boolData);
 
-	stmt = Parser::Parse("#comment test");
+    stmt = Parser::Parse("#comment test");
 
-	stmt = Parser::Parse("3 || 5");
-	assert(eval(stmt->expr).valueData.boolData == 1);
+    stmt = Parser::Parse("3 || 5");
+    assert(eval(stmt->expr).valueData.boolData == 1);
 
-	stmt = Parser::Parse("3 | 4");
-	assert(eval(stmt->expr).valueData.intData == 7);
+    stmt = Parser::Parse("3 | 4");
+    assert(eval(stmt->expr).valueData.intData == 7);
 
-	stmt = Parser::Parse("3 & 7");
-	assert(eval(stmt->expr).valueData.intData == 3);
+    stmt = Parser::Parse("3 & 7");
+    assert(eval(stmt->expr).valueData.intData == 3);
 
-	stmt = Parser::Parse("3 < 7");
-	assert(eval(stmt->expr).valueData.boolData);
+    stmt = Parser::Parse("3 < 7");
+    assert(eval(stmt->expr).valueData.boolData);
 
-	stmt = Parser::Parse("3 <= 7");
-	assert(eval(stmt->expr).valueData.boolData);
+    stmt = Parser::Parse("3 <= 7");
+    assert(eval(stmt->expr).valueData.boolData);
 
-	stmt = Parser::Parse("4 <= 3");
-	assert(!eval(stmt->expr).valueData.boolData);
+    stmt = Parser::Parse("4 <= 3");
+    assert(!eval(stmt->expr).valueData.boolData);
 
-	stmt = Parser::Parse("4 > 3");
-	assert(eval(stmt->expr).valueData.boolData);
+    stmt = Parser::Parse("4 > 3");
+    assert(eval(stmt->expr).valueData.boolData);
 
-	stmt = Parser::Parse("4 >= 4");
-	assert(eval(stmt->expr).valueData.boolData);
+    stmt = Parser::Parse("4 >= 4");
+    assert(eval(stmt->expr).valueData.boolData);
 
-	stmt = Parser::Parse("3 >= 4");
-	assert(!eval(stmt->expr).valueData.boolData);
+    stmt = Parser::Parse("3 >= 4");
+    assert(!eval(stmt->expr).valueData.boolData);
 
-	stmt = Parser::Parse("0b10 + 0b10");
-	assert(eval(stmt->expr).valueData.intData == 0b10 + 0b10);
+    stmt = Parser::Parse("0b10 + 0b10");
+    assert(eval(stmt->expr).valueData.intData == 0b10 + 0b10);
 
-	stmt = Parser::Parse("0b11 * 0b10");
-	assert(eval(stmt->expr).valueData.intData == 0b11 * 0b10);
+    stmt = Parser::Parse("0b11 * 0b10");
+    assert(eval(stmt->expr).valueData.intData == 0b11 * 0b10);
 
-	stmt = Parser::Parse("0xA1 * 0xAB");
-	assert(eval(stmt->expr).valueData.intData == 0xA1 * 0xAB);
+    stmt = Parser::Parse("0xA1 * 0xAB");
+    assert(eval(stmt->expr).valueData.intData == 0xA1 * 0xAB);
 
-	stmt = Parser::Parse("3 + 4 * 3");
-	assert(eval(stmt->expr).valueData.intData == 15);
+    stmt = Parser::Parse("3 + 4 * 3");
+    assert(eval(stmt->expr).valueData.intData == 15);
 
-	stmt = Parser::Parse("(3 + 4) * 3");
-	assert(eval(stmt->expr).valueData.intData == 21);
+    stmt = Parser::Parse("(3 + 4) * 3");
+    assert(eval(stmt->expr).valueData.intData == 21);
 
 }
 
@@ -244,7 +279,7 @@ void LexerTests() {
 
 void ASTTests() {
 
-    Expr *e = new AddExpr(new IntExpr(3), new IntExpr(5));
+    Expr * e = new AddExpr(new IntExpr(3), new IntExpr(5));
     assert(eval(e).valueData.intData == 8);
 
     e = new AddExpr(new MultiExpr(new IntExpr(3), new IntExpr(4)), new IntExpr(7));

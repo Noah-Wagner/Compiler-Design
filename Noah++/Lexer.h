@@ -28,6 +28,7 @@ struct Lexer {
 	const char * first;
 	const char * last;
 	std::string buffer;
+	KeywordTable keyword_table;
 
 	Lexer() {
 		ClearBuffer();
@@ -81,7 +82,12 @@ struct Lexer {
 		return tokens;
 	}
 
+	Token * ConsumeWord();
+
+	Token * ConsumeNum();
 };
+
+bool IsAlpha(const char & c) ;
 
 Token * Lexer::Next() {
 	std::string temp;
@@ -181,9 +187,9 @@ Token * Lexer::Next() {
 		case ':':
 			ClearBuffer();
 			return new Token(TOKEN_KIND::ColonTok);
-        case ';':
-            ClearBuffer();
-            return new Token(TOKEN_KIND::SemiColTok);
+		case ';':
+			ClearBuffer();
+			return new Token(TOKEN_KIND::SemiColTok);
 		case '(':
 			ClearBuffer();
 			return new Token(TOKEN_KIND::LeftParenTok);
@@ -193,99 +199,46 @@ Token * Lexer::Next() {
 		case '^':
 			ClearBuffer();
 			return new Token(TOKEN_KIND::BitXorTok);
-        case 'i':
-            if (LookAhead() == 'n') {
-                Consume();
-                if (LookAhead() == 't') {
-                    Consume();
-                    ClearBuffer();
-                    return new Token(TOKEN_KIND::VarIntTok);
-                }
-            }
-            throw std::invalid_argument("Unsupported syntax");
-        case 'b':
-            if (LookAhead() == 'o') {
-                Consume();
-                if (LookAhead() == 'o') {
-                    Consume();
-                    if (LookAhead() == 'l') {
-                        Consume();
-                        ClearBuffer();
-                        return new Token(TOKEN_KIND::VarBoolTok);
-                    }
-                }
-            }
-            throw std::invalid_argument("Unsupported syntax");
-		case 't':
-			if (LookAhead() == 'r') {
-				Consume();
-				if (LookAhead() == 'u') {
-					Consume();
-					if (LookAhead() == 'e') {
-						Consume();
-						ClearBuffer();
-						return new Token(TOKEN_KIND::BoolTok, 1);
-					}
-				}
+
+
+		default:
+			if (IsAlpha(lookAhead)) {
+				return ConsumeWord();
+			} else if (std::isdigit(lookAhead)) {
+				return ConsumeNum();
 			}
-			throw std::invalid_argument("Unsupported syntax");
-		case 'f':
-			if (LookAhead() == 'a') {
-				Consume();
-				if (LookAhead() == 'l') {
-					Consume();
-					if (LookAhead() == 's') {
-						Consume();
-						if (LookAhead() == 'e') {
-							Consume();
-							ClearBuffer();
-							return new Token(TOKEN_KIND::BoolTok, 0);
-						}
-					}
-				}
-			}
-			throw std::invalid_argument("Unsupported syntax");
-		case '0':
-			if (LookAhead() == 'b') {
-				Consume();
-				ClearBuffer();
-				while (std::isdigit(LookAhead())) {
-					Consume();
-				}
-				std::string bufferStore = buffer;
-				ClearBuffer();
-				return new Token(TOKEN_KIND::IntTok, std::stoi(bufferStore, nullptr, 2));
-			}
-			if (LookAhead() == 'x') {
-				Consume();
-				ClearBuffer();
-				while (std::isxdigit(LookAhead())) {
-					Consume();
-				}
-				std::string bufferStore = buffer;
-				ClearBuffer();
-				return new Token(TOKEN_KIND::IntTok, std::stoi(bufferStore, nullptr, 16));
-			}
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-		case '8':
-		case '9':
-			while (std::isdigit(LookAhead())) {
-				Consume();
-			}
-			std::string bufferStore = buffer;
-			ClearBuffer();
-			return new Token(TOKEN_KIND::IntTok, bufferStore);
 
 	}
 
 	throw std::invalid_argument("Unsupported syntax");
 
+}
+
+Token * Lexer::ConsumeWord() {
+	while (IsAlpha(LookAhead())) {
+		Consume();
+	}
+	auto iter = keyword_table.find(buffer);
+	if (iter != keyword_table.end()) {
+		ClearBuffer();
+		return new Token(iter->second);
+	} else {
+		return nullptr;
+	}
+
+}
+
+Token * Lexer::ConsumeNum() {
+	while (std::isdigit(LookAhead())) {
+		Consume();
+	}
+	std::string bufferStore = buffer;
+	ClearBuffer();
+	return new Token(TOKEN_KIND::IntTok, std::stoi(bufferStore));
+}
+
+bool IsAlpha(const char & c) {
+	return std::isalpha(c) || c == '_';
 }
 
 std::string Lexer::ProcessString(const std::string &basic_string) {

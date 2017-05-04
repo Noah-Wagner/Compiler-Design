@@ -20,102 +20,104 @@
 #include "Lexer.h"
 #include "Expr.h"
 #include "Expr.h"
-#include "Statement.h"
+#include "Stmt.h"
 #include "Translator.h"
 
 struct Parser {
 
-	Translator trans;
-	std::vector<Token *> tokens;
+    Translator trans;
+    std::vector<Token *> tokens;
     int pos = 0;
 
-	Parser(std::vector<Token *> tokens) : tokens(tokens) {};
+    Parser(std::vector<Token *> tokens) : tokens(tokens) {};
 
 
-	static ExprStmt * Parse(std::vector<Token *> tokens) {
+    static ExprStmt * Parse(std::vector<Token *> tokens) {
 
-		Parser parser(tokens);
-		ExprStmt * stmt = parser.GetStatement();
+        Parser parser(tokens);
+        ExprStmt * stmt = parser.GetStatement();
 
-		return stmt;
-	}
+        return stmt;
+    }
 
-	static ExprStmt * Parse(std::string str) {
-		return Parse(Lexer::Lexe(str));
-	}
+    static ExprStmt * Parse(std::string str) {
+        return Parse(Lexer::Lexe(str));
+    }
 
-	Token * Poll() {
-		if (pos == tokens.size()) {
-			return nullptr;
-		} else {
-			return tokens[pos++];
-		}
-	}
+    Token * Poll() {
+        if (pos == tokens.size()) {
+            return nullptr;
+        } else {
+            return tokens[pos++];
+        }
+    }
 
-	Token * Peek() {
-		try {
-			if (pos == tokens.size()) {
-				return nullptr;
-			} else {
-				return tokens[pos];
-			}
-		} catch (...) {
-			return nullptr;
-		}
-	}
+    Token * Peek() {
+        try {
+            if (pos == tokens.size()) {
+                return nullptr;
+            } else {
+                return tokens[pos];
+            }
+        } catch (...) {
+            return nullptr;
+        }
+    }
 
-	TOKEN_KIND PeekType() {
-		if (Token * token = Peek()) {
-			return token->kind;
-		}
-		return EOFTok;
-	}
+    TOKEN_KIND PeekType() {
+        if (Token * token = Peek()) {
+            return token->kind;
+        }
+        return EOFTok;
+    }
 
-	// A totally original method
+    // A totally original method
 
-	// Removes and returns the HEAD token if it is equal to the type
-	// Otherwise returns null
-	Token * Match(TOKEN_KIND type) {
-		if (PeekType() == type) {
-			return Poll();
-		} else {
-			return nullptr;
-		}
-	}
+    // Removes and returns the HEAD token if it is equal to the type
+    // Otherwise returns null
+    Token * Match(TOKEN_KIND type) {
+        if (PeekType() == type) {
+            return Poll();
+        } else {
+            return nullptr;
+        }
+    }
 
-	ExprStmt * GetStatement();
+    ExprStmt * GetStatement();
 
-	ExprStmt * GetExprStmt();
+    ExprStmt * GetExprStmt();
 
-	Expr * GetExpression();
+    Expr * GetExpression();
 
-	Expr * GetAddExpr();
+    Expr * GetAddExpr();
 
-	Expr * GetMultiExpr();
+    Expr * GetMultiExpr();
 
-	Expr * GetUnaryExpr();
+    Expr * GetUnaryExpr();
 
-	Expr * GetPrimaryExpr();
+    Expr * GetPrimaryExpr();
 
-	Expr * GetOrderExpr();
+    Expr * GetOrderExpr();
 
-	Expr * GetEqExpr();
+    Expr * GetEqExpr();
 
-	Expr * GetAndExpr();
+    Expr * GetAndExpr();
 
-	Expr * GetOrExpr();
+    Expr * GetOrExpr();
 
-	Expr * GetBitAndExpr();
+    Expr * GetBitAndExpr();
 
-	Expr * GetBitOrExpr();
+    Expr * GetBitOrExpr();
 
-	Expr * GetBitXorExpr();
+    Expr * GetBitXorExpr();
 
-    Expr *GetAssignExpr();
+    Expr * GetAssignExpr();
+
+    Expr * GetCondExpr();
 };
 
 ExprStmt * Parser::GetStatement() {
-	return GetExprStmt();
+    return GetExprStmt();
 }
 
 ExprStmt * Parser::GetExprStmt() {
@@ -124,189 +126,195 @@ ExprStmt * Parser::GetExprStmt() {
 }
 
 Expr * Parser::GetExpression() {
-	return GetAssignExpr();
+    return GetAssignExpr();
 }
 
 Expr * Parser::GetAssignExpr() {
     Expr * e1 = GetOrExpr();
-    while (true) {
-        if (Match(EqTok)) {
-            Expr * e2 = GetAssignExpr();
-        }
+    if (Match(EqTok)) {
+        Expr * e2 = GetAssignExpr();
+        e1 = trans.GetAssignExpr(e1, e2);
+    } else {
+
     }
+    return e1;
+}
+
+Expr * Parser::GetCondExpr() {
+    return GetOrExpr();
 }
 
 Expr * Parser::GetOrExpr() {
-	Expr * e1 = GetAndExpr();
-	while (true) {
-		if (Match(OrTok)) {
-			Expr * e2 = GetAndExpr();
-			e1 = trans.GetOrExpr(e1, e2);
-		} else {
-			break;
-		}
-	}
-	return e1;
+    Expr * e1 = GetAndExpr();
+    while (true) {
+        if (Match(OrTok)) {
+            Expr * e2 = GetAndExpr();
+            e1 = trans.GetOrExpr(e1, e2);
+        } else {
+            break;
+        }
+    }
+    return e1;
 }
 
 Expr * Parser::GetAndExpr() {
-	Expr * e1 = GetBitOrExpr();
-	while (true) {
-		if (Match(AndTok)) {
-			Expr * e2 = GetBitOrExpr();
-			e1 = trans.GetAndExpr(e1, e2);
-		} else {
-			break;
-		}
-	}
-	return e1;
+    Expr * e1 = GetBitOrExpr();
+    while (true) {
+        if (Match(AndTok)) {
+            Expr * e2 = GetBitOrExpr();
+            e1 = trans.GetAndExpr(e1, e2);
+        } else {
+            break;
+        }
+    }
+    return e1;
 }
 // OR XOR AND
 
 Expr * Parser::GetBitOrExpr() {
-	Expr * e1 = GetBitXorExpr();
-	while (true) {
-		if (Match(BitOrTok)) {
-			Expr * e2 = GetBitXorExpr();
-			e1 = trans.GetBitOrExpr(e1, e2);
-		} else {
-			break;
-		}
-	}
-	return e1;
+    Expr * e1 = GetBitXorExpr();
+    while (true) {
+        if (Match(BitOrTok)) {
+            Expr * e2 = GetBitXorExpr();
+            e1 = trans.GetBitOrExpr(e1, e2);
+        } else {
+            break;
+        }
+    }
+    return e1;
 }
 
 Expr * Parser::GetBitXorExpr() {
-	Expr * e1 = GetBitAndExpr();
-	while (true) {
-		if (Match(BitXorTok)) {
-			Expr * e2 = GetBitAndExpr();
-			e1 = trans.GetBitXorExpr(e1, e2);
-		} else {
-			break;
-		}
-	}
-	return e1;
+    Expr * e1 = GetBitAndExpr();
+    while (true) {
+        if (Match(BitXorTok)) {
+            Expr * e2 = GetBitAndExpr();
+            e1 = trans.GetBitXorExpr(e1, e2);
+        } else {
+            break;
+        }
+    }
+    return e1;
 }
 
 Expr * Parser::GetBitAndExpr() {
-	Expr * e1 = GetEqExpr();
-	while (true) {
-		if (Match(BitAndTok)) {
-			Expr * e2 = GetEqExpr();
-			e1 = trans.GetBitAndExpr(e1, e2);
-		} else {
-			break;
-		}
-	}
-	return e1;
+    Expr * e1 = GetEqExpr();
+    while (true) {
+        if (Match(BitAndTok)) {
+            Expr * e2 = GetEqExpr();
+            e1 = trans.GetBitAndExpr(e1, e2);
+        } else {
+            break;
+        }
+    }
+    return e1;
 }
 
 Expr * Parser::GetEqExpr() {
-	Expr * e1 = GetOrderExpr();
-	while (true) {
-		if (Match(EqTok)) {
-			Expr * e2 = GetOrderExpr();
-			e1 = trans.GetEqExpr(e1, e2);
-		} else if (Match(NeqTok)) {
-			Expr * e2 = GetOrderExpr();
-			e1 = trans.GetNeqExpr(e1, e2);
-		} else {
-			break;
-		}
-	}
-	return e1;
+    Expr * e1 = GetOrderExpr();
+    while (true) {
+        if (Match(EqTok)) {
+            Expr * e2 = GetOrderExpr();
+            e1 = trans.GetEqExpr(e1, e2);
+        } else if (Match(NeqTok)) {
+            Expr * e2 = GetOrderExpr();
+            e1 = trans.GetNeqExpr(e1, e2);
+        } else {
+            break;
+        }
+    }
+    return e1;
 }
 
 Expr * Parser::GetOrderExpr() {
-	Expr * e1 = GetAddExpr();
-	while (true) {
-		if (Match(LtTok)) {
-			Expr * e2 = GetAddExpr();
-			e1 = trans.GetLtExpr(e1, e2);
-		} else if (Match(LtEqTok)) {
-			Expr * e2 = GetAddExpr();
-			e1 = trans.GetLtEqExpr(e1, e2);
-		} else if (Match(GtTok)) {
-			Expr * e2 = GetAddExpr();
-			e1 = trans.GetGtExpr(e1, e2);
-		} else if (Match(GtEqTok)) {
-			Expr * e2 = GetAddExpr();
-			e1 = trans.GetGtEqExpr(e1, e2);
-		} else {
-			break;
-		}
-	}
-	return e1;
+    Expr * e1 = GetAddExpr();
+    while (true) {
+        if (Match(LtTok)) {
+            Expr * e2 = GetAddExpr();
+            e1 = trans.GetLtExpr(e1, e2);
+        } else if (Match(LtEqTok)) {
+            Expr * e2 = GetAddExpr();
+            e1 = trans.GetLtEqExpr(e1, e2);
+        } else if (Match(GtTok)) {
+            Expr * e2 = GetAddExpr();
+            e1 = trans.GetGtExpr(e1, e2);
+        } else if (Match(GtEqTok)) {
+            Expr * e2 = GetAddExpr();
+            e1 = trans.GetGtEqExpr(e1, e2);
+        } else {
+            break;
+        }
+    }
+    return e1;
 }
 
 Expr * Parser::GetAddExpr() {
-	Expr * e1 = GetMultiExpr();
-	while (true) {
-		if (Match(AddTok)) {
-			Expr * e2 = GetMultiExpr();
-			e1 = trans.GetAddExpr(e1, e2);
-		} else if (Match(SubTok)) {
-			Expr * e2 = GetMultiExpr();
-			e1 = trans.GetSubExpr(e1, e2);
-		} else {
-			break;
-		}
-	}
-	return e1;
+    Expr * e1 = GetMultiExpr();
+    while (true) {
+        if (Match(AddTok)) {
+            Expr * e2 = GetMultiExpr();
+            e1 = trans.GetAddExpr(e1, e2);
+        } else if (Match(SubTok)) {
+            Expr * e2 = GetMultiExpr();
+            e1 = trans.GetSubExpr(e1, e2);
+        } else {
+            break;
+        }
+    }
+    return e1;
 }
 
 Expr * Parser::GetMultiExpr() {
-	Expr * e1 = GetUnaryExpr();
-	Expr * e2;
-	while (true) {
-		if (Match(MulTok)) {
-			e2 = GetUnaryExpr();
-			e1 = trans.GetMulExpr(e1, e2);
-		} else if (Match(DivTok)) {
-			e2 = GetUnaryExpr();
-			e1 = trans.GetDivExpr(e1, e2);
-		} else if (Match(ModTok)) {
-			e2 = GetUnaryExpr();
-			e1 = trans.GetModExpr(e1, e2);
-		} else {
-			break;
-		}
-	}
-	return e1;
+    Expr * e1 = GetUnaryExpr();
+    Expr * e2;
+    while (true) {
+        if (Match(MulTok)) {
+            e2 = GetUnaryExpr();
+            e1 = trans.GetMulExpr(e1, e2);
+        } else if (Match(DivTok)) {
+            e2 = GetUnaryExpr();
+            e1 = trans.GetDivExpr(e1, e2);
+        } else if (Match(ModTok)) {
+            e2 = GetUnaryExpr();
+            e1 = trans.GetModExpr(e1, e2);
+        } else {
+            break;
+        }
+    }
+    return e1;
 }
 
 Expr * Parser::GetUnaryExpr() {
-	if (Match(SubTok)) {
-		Expr * e1 = GetUnaryExpr();
-		return trans.GetNegExpr(e1);
-	} else if (Match(NotTok)) {
-		Expr * e1 = GetUnaryExpr();
-		return trans.GetNotExpr(e1);
-	}
-	return GetPrimaryExpr();
+    if (Match(SubTok)) {
+        Expr * e1 = GetUnaryExpr();
+        return trans.GetNegExpr(e1);
+    } else if (Match(NotTok)) {
+        Expr * e1 = GetUnaryExpr();
+        return trans.GetNotExpr(e1);
+    }
+    return GetPrimaryExpr();
 }
 
 Expr * Parser::GetPrimaryExpr() {
-	Expr * e1;
-	switch (Peek()->kind) {
-		case BoolTok:
-			return trans.GetBoolExpr(Poll());
-		case IntTok:
-			return trans.GetIntExpr(Poll());
-		case CommTok:
-			return nullptr;
-		case LeftParenTok:
-			Poll();
-			e1 = GetExpression();
-			Poll(); // TODO: Add error for no matching right paren
-			return e1;
+    Expr * e1;
+    switch (Peek()->kind) {
+        case BoolTok:
+            return trans.GetBoolExpr(Poll());
+        case IntTok:
+            return trans.GetIntExpr(Poll());
+        case CommTok:
+            return nullptr;
+        case LeftParenTok:
+            Poll();
+            e1 = GetExpression();
+            Poll(); // TODO: Add error for no matching right paren
+            return e1;
         case EOFTok:
             throw std::runtime_error("WOOPS");
-		default:
-			throw std::runtime_error("OH NO");
-	}
-	// TODO: Error case
+        default:
+            throw std::runtime_error("OH NO");
+    }
+    // TODO: Error case
 }
 
 #endif //C_PARSER_H

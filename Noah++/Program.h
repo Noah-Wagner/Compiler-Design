@@ -19,9 +19,9 @@
 #define C_PROGRAM_H
 
 #include <vector>
-#include "Statement.h"
+#include "Stmt.h"
 
-struct Program : std::vector<Statement *> {
+struct Program : std::vector<Stmt *> {
 
 };
 
