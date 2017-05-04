@@ -1,5 +1,5 @@
-# Noah Wagner & Steven Gates - Compiler Design 
-## Noah++
+# Noah++
+## Noah Wagner & Steven Gates - Compiler Design 
 
 # Overview
 The newest addition to this project is the implementation of code generation. This module consumes an AST root and produces JVM bytecode. The implementation is still under development, with completion expected by late next week. 
