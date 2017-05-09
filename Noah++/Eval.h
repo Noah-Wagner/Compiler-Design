@@ -122,6 +122,14 @@ Value eval(Expr *e) {
             r = performIntegerOperation(e->e1, e->e1, [](int x, int y) { return 0 - x; });
         }
 
+        void visit(AssignExpr * e) {
+	        throw std::runtime_error("Shouldn't be here");
+        }
+
+        void visit(VarExpr * e) {
+	        throw std::runtime_error("Shouldn't be here");
+        }
+
         void visit(CondExpr *e) {
             r = eval(e->e1);
             if (r.valueType != TYPE::BoolType) {

@@ -25,24 +25,21 @@
 
 struct Parser {
 
-    Translator trans;
-    std::vector<Token *> tokens;
-    int pos = 0;
+	Translator trans;
+	std::vector<Token *> tokens;
+	int pos = 0;
 
-    Parser(std::vector<Token *> tokens) : tokens(tokens) {};
+	Parser(std::vector<Token *> tokens) : tokens(tokens) {};
 
+	static ExprStmt * Parse(std::string str, SymbolTable & symbol_table, KeywordTable & keyword_table) {
+		return Parse(Lexer::Lexe(str, symbol_table, keyword_table));
+	}
 
-    static ExprStmt * Parse(std::vector<Token *> tokens) {
-
-        Parser parser(tokens);
-        ExprStmt * stmt = parser.GetStatement();
-
-        return stmt;
-    }
-
-    static ExprStmt * Parse(std::string str) {
-        return Parse(Lexer::Lexe(str));
-    }
+	static ExprStmt * Parse(std::vector<Token *> tokens) {
+		Parser parser(tokens);
+		ExprStmt * stmt = parser.GetStatement();
+		return stmt;
+	}
 
     Token * Poll() {
         if (pos == tokens.size()) {
@@ -131,9 +128,9 @@ Expr * Parser::GetExpression() {
 
 Expr * Parser::GetAssignExpr() {
     Expr * e1 = GetOrExpr();
-    if (Match(EqTok)) {
-        Expr * e2 = GetAssignExpr();
-        e1 = trans.GetAssignExpr(e1, e2);
+    if (Match(AssignTok)) {
+        Expr * e2 = GetOrExpr(); // TODO: Check this out lol
+        e1 = trans.GetAssignExpr((VarExpr *)e1, e2);
     } else {
 
     }
@@ -297,11 +294,26 @@ Expr * Parser::GetUnaryExpr() {
 
 Expr * Parser::GetPrimaryExpr() {
     Expr * e1;
+	Token * tok;
+	Token * identifier;
     switch (Peek()->kind) {
         case BoolTok:
             return trans.GetBoolExpr(Poll());
         case IntTok:
             return trans.GetIntExpr(Poll());
+	    case VarKw:
+		    Poll();
+		    tok = Poll();
+		    identifier = Poll();
+		    if (tok->kind == TOKEN_KIND::BoolKw) {
+			    std::cout << "var bool";
+			    return trans.GetVarExpr(TYPE::BoolType, identifier);
+
+		    } else if (tok->kind == TOKEN_KIND::IntKw) {
+			    std::cout << "var int";
+				return trans.GetVarExpr(TYPE::IntType, identifier);
+		    }
+		    throw std::runtime_error("Expected valid var type");
         case CommTok:
             return nullptr;
         case LeftParenTok:
