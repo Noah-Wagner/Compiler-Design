@@ -22,8 +22,6 @@ All type checking is done in 'Type.h', using a visitor pattern. This is done wit
 
 All expression evaluations are performed in 'Eval.h'. To limit code length and increase modularity, anonymous/lambda functions were used to inject evaluation behavior into base evaluation class functions. Before evaluation, the sub-expressions are type-checked to ensure well-formed evaluation. A 'Value' structure was created in 'Value.h' to allow for multiple return types from the evaluation. This uses a discriminated union.
 
-Further implementation is required to fully support functions and variables, but some piping has been completed. Full implementation is expected late next week.
-
 ## Lexical Analysis
 The Lexical Analyzer module consumes a sequence of characters (a string) and produces a sequence of tokens. The lexical analyzer currently supports all required operations of Noah++.
 
