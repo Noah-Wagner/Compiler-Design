@@ -92,12 +92,25 @@ TYPE Type(Expr *e) {
         void visit(OrElseExpr *e) {
             r = TYPE::BoolType;
         }
+	    void visit(AssignExpr * e) {
+		    r = TYPE::BoolType;
+	    }
+	    void visit(VarExpr * e) {
+		    r = TYPE::BoolType;
+	    }
 
     };
     V visitor;
     e->accept(visitor);
     return visitor.r;
 }
+
+
+
+
+
+
+
 
 
 #endif //C_TYPE_H

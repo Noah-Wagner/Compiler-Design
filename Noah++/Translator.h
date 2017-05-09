@@ -109,9 +109,13 @@ struct Translator {
 		return new BitXorExpr(e1, e2);
 	}
 
-    Expr * GetAssignExpr(Expr * pExpr, Expr * pExpr1) {
-        return nullptr;
+    Expr * GetAssignExpr(VarExpr * e1, Expr * e2) {
+        return new AssignExpr(e1, e2);
     }
+
+	Expr * GetVarExpr(TYPE kind, Token * tok) {
+		return new VarExpr(kind, tok->attribute);
+	}
 };
 
 #endif //C_TRANSLATOR_H

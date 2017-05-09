@@ -23,25 +23,31 @@
 #include <vector>
 #include "Eval.h"
 #include "Token.h"
+#include "SymbolTable.h"
+#include "Symbol.h"
 
 struct Lexer {
 	const char * first;
 	const char * last;
 	std::string buffer;
-	KeywordTable keyword_table;
+	KeywordTable * keyword_table;
+	SymbolTable  * symbol_table;
 
-	Lexer() {
-		ClearBuffer();
-		const char * first = NULL;
-		const char * last = NULL;
-	}
+//	Lexer() {
+//		ClearBuffer();
+//		const char * first = NULL;
+//		const char * last = NULL;
+//	}
 
 	std::string ProcessString(const std::string &basic_string);
 
-	Lexer(const std::string &parseString) {
+	Lexer(const std::string & parseString, SymbolTable & symbol_table, KeywordTable & keyword_table) :
+			keyword_table(&keyword_table), symbol_table(&symbol_table) {
+
 //		std::string str = ProcessString(parseString);
 		first = &parseString[0];
 		last = &parseString[parseString.length() - 1];
+
 	}
 
 	bool IsEof() {
@@ -69,10 +75,10 @@ struct Lexer {
 
 	Token * Next();
 
-	static std::vector<Token *> Lexe(std::string input) {
+	static std::vector<Token *> Lexe(std::string input, SymbolTable & symbol_table, KeywordTable & keyword_table) {
+		Lexer lexer(input, symbol_table, keyword_table);
 		std::vector<Token *> tokens;
 		Token * token;
-		Lexer lexer(input);
 		while (!lexer.IsEof()) {
 			token = lexer.Next();
 			tokens.push_back(token);
@@ -87,7 +93,7 @@ struct Lexer {
 	Token * ConsumeNum();
 };
 
-bool IsAlpha(const char & c) ;
+bool IsAlpha(const char & c);
 
 Token * Lexer::Next() {
 	std::string temp;
@@ -154,7 +160,8 @@ Token * Lexer::Next() {
 				ClearBuffer();
 				return new Token(TOKEN_KIND::EqTok);
 			}
-			throw std::invalid_argument("Unsupported syntax");
+			ClearBuffer();
+			return new Token(TOKEN_KIND::AssignTok);
 		case '<':
 			if (LookAhead() == '=') {
 				Consume();
@@ -218,14 +225,14 @@ Token * Lexer::ConsumeWord() {
 	while (IsAlpha(LookAhead())) {
 		Consume();
 	}
-	auto iter = keyword_table.find(buffer);
-	if (iter != keyword_table.end()) {
+	auto iter = keyword_table->find(buffer);
+	if (iter != keyword_table->end()) {
 		ClearBuffer();
 		return new Token(iter->second);
-	} else {
-		return nullptr;
+	} else { // Token ID
+		const std::string * symbol = symbol_table->insert(buffer);
+		return new Token(TOKEN_KIND::IdTok, *symbol);
 	}
-
 }
 
 Token * Lexer::ConsumeNum() {

@@ -46,13 +46,12 @@ enum TOKEN_KIND {
 
 	VarNameTok,
 
-
+	AssignTok, IdTok,
 
 	TrueKw, FalseKw,
 	VarKw, IntKw,
 	ReturnKw, DefKw,
 	BoolKw
-
 
 };
 
@@ -74,9 +73,9 @@ struct Token {
 
 };
 
+
 std::string TokenToString(TOKEN_KIND token) {
 	switch (token) {
-
 		case EOFTok: return "0/";
 		case AddTok: return "+";
 		case SubTok: return "-";
@@ -104,8 +103,8 @@ std::string TokenToString(TOKEN_KIND token) {
 		case BitXorTok: return "^";
 		case BitAndTok: return "&";
 		case BitOrTok: return "|";
-	}
-}
+	};
+};
 
 
 struct KeywordTable : std::unordered_map<std::string, TOKEN_KIND > {
@@ -119,8 +118,6 @@ struct KeywordTable : std::unordered_map<std::string, TOKEN_KIND > {
 		insert({"return", ReturnKw});
 		insert({"var", VarKw});
 	}
-
-
 
 };
 
